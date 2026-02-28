@@ -2,7 +2,6 @@
   "rewrites": [
     { "source": "/terminal", "destination": "/concept-terminal.html" },
     { "source": "/neural", "destination": "/concept-neural.html" },
-    { "source": "/dashboard", "destination": "/concept-dashboard.html" },
-    { "source": "/chat", "destination": "/concept-chat.html" }
+    { "source": "/dashboard", "destination": "/concept-dashboard.html" }
   ]
 }
