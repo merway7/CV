@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merwan Djerbi - Agentic AI Engineer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a2e;
+            background: #fff;
+            font-size: 11px;
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        @page {
+            margin: 0;
+            size: A4;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 28px 36px;
+            background: #fff;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #1a1a2e;
+            margin-bottom: 18px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #1a1a2e;
+        }
+
+        .header-left .title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a6cf7;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 10.5px;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        .header-right a {
+            color: #4a6cf7;
+            text-decoration: none;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 16px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #4a6cf7;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        /* Summary */
+        .summary {
+            font-size: 11px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Experience entry */
+        .entry {
+            margin-bottom: 12px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2px;
+        }
+
+        .entry-company {
+            font-weight: 700;
+            font-size: 12px;
+            color: #1a1a2e;
+        }
+
+        .entry-date {
+            font-size: 10px;
+            color: #666;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .entry-role {
+            font-style: italic;
+            font-size: 10.5px;
+            color: #555;
+            margin-bottom: 3px;
+        }
+
+        .entry-location {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .entry ul {
+            padding-left: 16px;
+            margin-top: 3px;
+        }
+
+        .entry li {
+            font-size: 10.5px;
+            color: #333;
+            margin-bottom: 2px;
+            line-height: 1.5;
+        }
+
+        /* Projects grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 16px;
+        }
+
+        .project {
+            margin-bottom: 4px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .project-name {
+            font-weight: 600;
+            font-size: 10.5px;
+            color: #1a1a2e;
+        }
+
+        .project-tech {
+            font-size: 9px;
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+
+        .project-desc {
+            font-size: 10px;
+            color: #444;
+            line-height: 1.4;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px 20px;
+        }
+
+        .skill-category {
+            font-weight: 600;
+            font-size: 10px;
+            color: #1a1a2e;
+            margin-bottom: 1px;
+        }
+
+        .skill-items {
+            font-size: 10px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        /* Education */
+        .edu-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+        }
+
+        .edu-school {
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .edu-detail {
+            font-size: 10.5px;
+            color: #444;
+        }
+
+        /* Languages */
+        .languages {
+            display: flex;
+            gap: 24px;
+            font-size: 10.5px;
+        }
+
+        .lang-item span {
+            font-weight: 600;
+        }
+
+        @media print {
+            body { background: #fff; }
+            .page {
+                padding: 24px 32px;
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>Merwan T Djerbi</h1>
+                <div class="title">Agentic AI Engineer</div>
+            </div>
+            <div class="header-right">
+                merw@ndjerbi.com<br>
+                (470) 521-9011<br>
+                Atlanta, GA, USA<br>
+                <a href="https://flair-analytics.com">flair-analytics.com</a>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <div class="section-title">Profile</div>
+            <div class="summary">
+                Agentic AI Engineer and founder of Flair Group, an AI-powered supply chain analytics company.
+                7+ years of experience spanning information systems, project management, and enterprise software — now fully focused on building autonomous multi-agent systems, AI-driven BI platforms, and production-grade applications using LLMs (Claude, GPT, Mistral).
+                Currently implementing AI solutions for a $400M+ revenue enterprise client through Flair Group, designing agentic workflows that automate complex business processes end-to-end.
+                Passionate about building AI tools that ship — from concept to production.
+            </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="section">
+            <div class="section-title">Professional Experience</div>
+
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-company">Flair Group &mdash; AI-Powered Supply Chain Analytics</span>
+                    <span class="entry-date">2022 &ndash; Present</span>
+                </div>
+                <div class="entry-role">Founder & Agentic AI Engineer &nbsp;|&nbsp; <span class="entry-location">Atlanta, GA, USA &nbsp;|&nbsp; flair-analytics.com</span></div>
+                <ul>
+                    <li>Founded <strong>Flair Group</strong>, an AI-powered supply chain intelligence company delivering real-time KPI dashboards, AI demand forecasting, and automated inventory optimization to mid-market and enterprise clients.</li>
+                    <li>Contracted by a <strong>$400M+ revenue global PPE manufacturer</strong> to implement AI across their US operations (~200 employees).</li>
+                    <li>Designed and developed a <strong>hierarchical multi-agent framework</strong> (Planner-Worker-Judge pattern) using Claude Opus via the Anthropic API for autonomous task execution.</li>
+                    <li>Created <strong>HiveBrain</strong>, a local-first developer knowledge base with MCP server integration, enabling AI coding assistants to search and contribute to a shared knowledge graph across sessions.</li>
+                    <li>Built an <strong>AI-powered competitor analysis platform</strong> (FastAPI + Claude Sonnet) scoring competitors across 5 weighted dimensions with automated data collection.</li>
+                    <li>Developed an <strong>AI content generation & scheduling system</strong> for LinkedIn/X using local LLMs (Ollama + Mistral) — zero API cost, Streamlit approval dashboard.</li>
+                </ul>
+            </div>
+
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-company">DeltaPlus USA &mdash; Client via Flair Group</span>
+                    <span class="entry-date">2022 &ndash; Present</span>
+                </div>
+                <div class="entry-role">AI Solutions Architect &nbsp;|&nbsp; <span class="entry-location">Atlanta, GA, USA</span></div>
+                <ul>
+                    <li>Embedded within a <strong>$400M+ revenue PPE manufacturer</strong> to design and deploy AI-driven tools across their US operations.</li>
+                    <li>Built the <strong>DeltaPlus Dashboard</strong> — a Next.js + Firestore real-time KPI platform with SQCDP boards for operational visibility.</li>
+                    <li>Built the <strong>Flair BI platform</strong> — 34 KPIs across 5 categories, real-time SQCDP management boards, JIT reorder simulations, and procurement decision support tools.</li>
+                    <li>Developed <strong>lead time analysis and JIT reorder simulation</strong> tools, reducing procurement decision time through AI-assisted inventory optimization.</li>
+                    <li>Delivered <strong>customer churn analysis, segmentation, ABC/XYZ inventory classification, and inventory disposal analysis</strong> using AI-driven data analytics pipelines.</li>
+                    <li>Achieved <strong>35% reduction in stockouts</strong>, <strong>20% decrease in excess inventory</strong>, and <strong>$380K in annual cost savings</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-company">EGA</span>
+                    <span class="entry-date">March 2019 &ndash; 2022</span>
+                </div>
+                <div class="entry-role">Information System Consultant &nbsp;|&nbsp; <span class="entry-location">Neuilly-Sur-Marne, France</span></div>
+                <ul>
+                    <li>Implementation of a logistics application to manage entry and exit of stock with stock-dependent methods (LIFO/FIFO).</li>
+                    <li>Translated specifications for the development team, facilitated stakeholder meetings, and provided technical support.</li>
+                    <li>Resource optimization through company-built software solutions.</li>
+                </ul>
+            </div>
+
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-company">IBM</span>
+                    <span class="entry-date">2018 &ndash; 2019</span>
+                </div>
+                <div class="entry-role">Project Management Officer (PMO) &nbsp;|&nbsp; <span class="entry-location">Montpellier, France</span></div>
+                <ul>
+                    <li>Right hand of the manager for the BizTalk module of Microsoft Dynamics Navision ERP.</li>
+                    <li>Coordinated a <strong>cross-continental team of 34</strong> (France, India, Mexico), managing offshore teams and producing data-driven KPI optimization reports.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- AI Projects -->
+        <div class="section">
+            <div class="section-title">AI Projects & Open Source</div>
+            <div class="projects-grid">
+                <div class="project">
+                    <span class="project-name">Organized Agents</span>
+                    <span class="project-tech"> &mdash; Python, Claude API</span>
+                    <div class="project-desc">Hierarchical multi-agent framework: Orchestrator coordinates Planner, Workers, and Judge agents for autonomous task execution.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">HiveBrain</span>
+                    <span class="project-tech"> &mdash; Node.js, Astro, SQLite, MCP</span>
+                    <div class="project-desc">Local-first developer knowledge base with REST API and MCP server. AI coding agents search and submit patterns across sessions.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">LLM Council</span>
+                    <span class="project-tech"> &mdash; Python, React, OpenRouter</span>
+                    <div class="project-desc">Multi-LLM deliberation system: queries multiple models simultaneously, anonymous peer review and ranking, chairman synthesis.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">ScanSafe (Food Scanner)</span>
+                    <span class="project-tech"> &mdash; React, React Native, TypeScript</span>
+                    <div class="project-desc">AI-powered PWA & mobile app: barcode scanning, Longevity Score (0-100) based on health profile, Open Food Facts integration.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">AI Social Media Manager</span>
+                    <span class="project-tech"> &mdash; Python, Ollama, Streamlit</span>
+                    <div class="project-desc">Content generation & scheduling for LinkedIn/X using local Mistral LLM. Zero API cost, approval dashboard, auto-publishing.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">AI Competitor Analysis</span>
+                    <span class="project-tech"> &mdash; FastAPI, Claude Sonnet, SQLite</span>
+                    <div class="project-desc">Automated competitor scoring across traffic, SEO, social, tech, and company dimensions with weighted AI-powered analysis.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">Data Analyst Agent</span>
+                    <span class="project-tech"> &mdash; Claude Code Sub-Agent</span>
+                    <div class="project-desc">Custom Claude Code agent for data cleaning, customer segmentation, and automated analytics workflows.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">Flair Music</span>
+                    <span class="project-tech"> &mdash; React Native, Expo, Laravel, Spotify/Apple Music/Ticketmaster APIs</span>
+                    <div class="project-desc">Music discovery app with AI-curated feed of albums, artist interviews, merch, and live events. Integrates Spotify, Apple Music, and Ticketmaster data pipelines.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">App Manager</span>
+                    <span class="project-tech"> &mdash; React, Vite, Express, Node.js</span>
+                    <div class="project-desc">Internal web dashboard to manage, monitor, and launch all AI applications from a single interface. Client-server architecture with centralized port and process management.</div>
+                </div>
+                <div class="project">
+                    <span class="project-name">Alfred</span>
+                    <span class="project-tech"> &mdash; Voice AI, Conversational Agent</span>
+                    <div class="project-desc">Fully autonomous personal AI agent with voice and chat interfaces — sends emails, manages calendar, automates daily workflows, and executes multi-step tasks end-to-end on behalf of the user.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="section">
+            <div class="section-title">Technical Skills</div>
+            <div class="skills-grid">
+                <div>
+                    <div class="skill-category">AI & LLMs</div>
+                    <div class="skill-items">Claude API (Opus, Sonnet, Haiku), OpenRouter, Ollama, Mistral, Multi-Agent Systems, MCP Protocol, Prompt Engineering, RAG</div>
+                </div>
+                <div>
+                    <div class="skill-category">Backend & Data</div>
+                    <div class="skill-items">Python, Node.js, TypeScript, FastAPI, Express, SQL, SQLite, Firestore, Firebase, REST APIs</div>
+                </div>
+                <div>
+                    <div class="skill-category">Frontend & Apps</div>
+                    <div class="skill-items">React, Next.js, Vite, Streamlit, Astro, React Native, Expo, HTML/CSS, Tailwind</div>
+                </div>
+                <div>
+                    <div class="skill-category">DevOps & Tools</div>
+                    <div class="skill-items">Git, Docker, Claude Code, Vercel, Firebase Hosting, uv, npm</div>
+                </div>
+                <div>
+                    <div class="skill-category">Business & Analytics</div>
+                    <div class="skill-items">KPI Design, Supply Chain Analytics, BI Dashboards, Procurement, Project Management</div>
+                </div>
+                <div>
+                    <div class="skill-category">Methodologies</div>
+                    <div class="skill-items">Agentic AI Design, Planner-Worker-Judge, Autonomous Systems, Agile, Lean</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education -->
+        <div class="section">
+            <div class="section-title">Education</div>
+            <div class="edu-entry">
+                <div>
+                    <span class="edu-school">ESME Sudria, Paris</span>
+                    <span class="edu-detail"> &mdash; Master's Degree in Digital Intelligence and Data (Information Systems, Big Data)</span>
+                </div>
+                <span class="entry-date">2013 &ndash; 2018</span>
+            </div>
+            <div class="edu-detail" style="margin-left: 0; margin-bottom: 6px;">International semester at Heriot-Watt University, Edinburgh, Scotland.</div>
+        </div>
+
+        <!-- Languages -->
+        <div class="section">
+            <div class="section-title">Languages</div>
+            <div class="languages">
+                <div class="lang-item"><span>English:</span> Bilingual</div>
+                <div class="lang-item"><span>French:</span> Native</div>
+                <div class="lang-item"><span>Spanish:</span> Conversational</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
