@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Merwan T Djerbi — Agentic AI Engineer</title>
+<meta name="description" content="Portfolio of Merwan T Djerbi — Agentic AI Engineer building autonomous systems, multi-agent frameworks, and supply chain intelligence.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://merwandjerbi.com/">
+<meta property="og:title" content="Merwan T Djerbi — Agentic AI Engineer">
+<meta property="og:description" content="Portfolio of Merwan T Djerbi — Agentic AI Engineer building autonomous systems, multi-agent frameworks, and supply chain intelligence.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +22,7 @@
   --surface:#16161f;
   --border:#2a2a3a;
   --text:#e0e0ec;
-  --text2:#8888a0;
+  --text2:#9898b2;
   --accent:#B07FE0;
   --accent2:#00b8ff;
   --accent3:#7b61ff;
@@ -474,12 +480,6 @@ footer a{color:var(--accent);text-decoration:none}
   background:rgba(0,184,255,.06);border:1px solid rgba(0,184,255,.12);
   border-radius:6px;padding:3px 10px;
 }
-.blog-read{
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  color:var(--accent);display:flex;align-items:center;gap:6px;
-  transition:gap .3s;
-}
-.blog-card:hover .blog-read{gap:10px}
 
 /* CASE STUDY BANNER */
 .case-study-banner{
@@ -623,7 +623,9 @@ footer a{color:var(--accent);text-decoration:none}
   .form-row{flex-direction:column;gap:14px}
   .download-btn{bottom:20px;right:20px;padding:12px 18px;font-size:11px}
 }
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
 </style>
+<link rel="stylesheet" href="view-switcher.css">
 </head>
 <body>
 
@@ -764,9 +766,9 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
         <div class="tl-role">Information System Consultant &middot; Neuilly-Sur-Marne, France</div>
         <ul class="tl-list">
-          <li>Implementation of logistics application for stock management (LIFO/FIFO)</li>
-          <li>Translated specifications for development teams, facilitated stakeholder meetings</li>
-          <li>Resource optimization through company-built software solutions</li>
+          <li>Implemented LIFO/FIFO logistics platform tracking 12,000+ SKUs across 4 warehouses</li>
+          <li>Translated specifications for 8-person dev team, facilitated weekly stakeholder meetings with 15+ participants</li>
+          <li>Reduced stock reconciliation time by 60% through custom software consolidating 3 legacy systems</li>
         </ul>
       </div>
 
@@ -796,7 +798,7 @@ footer a{color:var(--accent);text-decoration:none}
     </div>
     <div class="projects-grid">
 
-      <div class="project-card reveal">
+      <a class="project-card reveal" href="https://flair-analytics.com" target="_blank">
         <div class="project-icon">SC</div>
         <div class="project-name">Supply Chain AI Dashboard</div>
         <div class="project-desc">Real-time supply chain KPI monitoring with AI-powered anomaly detection, demand forecasting, and automated alert system.</div>
@@ -806,7 +808,7 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="project-tag">Claude API</span>
           <span class="project-tag">Pandas</span>
         </div>
-      </div>
+      </a>
 
       <div class="project-card reveal">
         <div class="project-icon">NF</div>
@@ -1112,7 +1114,7 @@ footer a{color:var(--accent);text-decoration:none}
     </div>
     <div class="blog-grid">
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/alfred">
         <div class="blog-date">Feb 2026</div>
         <div class="blog-title">I Built Alfred: A Fully Autonomous AI Agent That Runs My Life</div>
         <div class="blog-excerpt">After months of building agentic systems for enterprises, I turned the lens inward. Alfred is my personal AI agent &mdash; it reads my emails, drafts responses, manages my calendar, and executes multi-step workflows through voice and chat. The key insight was treating personal automation like an enterprise problem: a persistent agent with memory, tool access, and a feedback loop. Alfred doesn't just respond to commands &mdash; it anticipates. It notices I book flights every third Thursday and pre-researches options. It sees a Slack message about a deadline and blocks focus time on my calendar. We're past the "AI assistant" era. This is the "AI colleague" era.</div>
@@ -1121,10 +1123,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Personal AI</span>
           <span class="blog-tag">Automation</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/openclaw">
         <div class="blog-date">Jan 2026</div>
         <div class="blog-title">OpenClaw, Claude Code, and the Future of AI Agents as Interfaces</div>
         <div class="blog-excerpt">OpenClaw going viral in January was the tipping point I'd been waiting for. An open-source agent that lives in your messaging apps, connects to any LLM, and has a community registry of 5,000+ skills? That's not a chatbot &mdash; that's a new computing paradigm. I've been running my own Clawdbot instance since Steinberger's original release in November, and it fundamentally changed how I think about AI interfaces. The terminal (Claude Code) is for builders. The chat app (OpenClaw) is for everyone else. The real question isn't "which agent is best" &mdash; it's "how many agents do you need, and where should they live?" My answer: everywhere. An agent in your IDE, one in your WhatsApp, one managing your supply chain. The OS of the future is a swarm.</div>
@@ -1133,10 +1134,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Claude Code</span>
           <span class="blog-tag">Agent UX</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/clawdbot">
         <div class="blog-date">Nov 2025</div>
         <div class="blog-title">Clawdbot: My First Experiment With Messaging-First AI Agents</div>
         <div class="blog-excerpt">When Peter Steinberger dropped Clawdbot as open source, I spun up an instance within hours. A Docker container, a Claude API key, and suddenly I had a fully autonomous agent living in my Signal chats. The architecture is elegant &mdash; the messaging app becomes the universal interface, and the agent handles everything from running shell commands to managing integrations. I immediately started extending it: connecting it to my Flair analytics pipeline so I could query supply chain KPIs from my phone. "What's the stockout rate for Q4?" &mdash; answered in 3 seconds via text message. This is what enterprise AI should feel like.</div>
@@ -1145,10 +1145,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Docker</span>
           <span class="blog-tag">Messaging AI</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/rag">
         <div class="blog-date">Oct 2025</div>
         <div class="blog-title">Why I Stopped Using RAG and Started Building Agents</div>
         <div class="blog-excerpt">RAG was a revelation in 2023. Stuff your context window with retrieved documents, and the LLM magically knows your data. But after deploying RAG pipelines in production for a $400M+ enterprise, I realized we were solving the wrong problem. The bottleneck was never "the model doesn't know enough" &mdash; it was "the model can't act on what it knows." That's when I switched to agentic architectures. An agent with a Planner, Workers, and a Judge doesn't just retrieve &mdash; it reasons, executes, and self-corrects. My stockout predictions improved 35% not because the model got smarter, but because it could now run the full analysis loop autonomously.</div>
@@ -1157,10 +1156,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">RAG</span>
           <span class="blog-tag">Production AI</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/mcp">
         <div class="blog-date">Dec 2024</div>
         <div class="blog-title">The MCP Protocol Will Change How We Build AI Tools</div>
         <div class="blog-excerpt">I've been building developer tools for two years now. The biggest pain point? Every AI assistant is an island. Your Claude Code session discovers a critical debugging pattern at 2am, and by morning it's gone forever. That's why I built HiveBrain &mdash; a local knowledge base with an MCP server that lets any AI coding agent search and contribute to a persistent knowledge graph. MCP (Model Context Protocol) is the missing layer between LLMs and the tools they need. It's what HTTP was for the web: a universal interface that lets any model talk to any tool. When I plugged HiveBrain into my daily workflow via MCP, my bug resolution time dropped by roughly 40%. The pattern is clear: the next wave of AI isn't better models &mdash; it's better infrastructure.</div>
@@ -1169,10 +1167,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Developer Tools</span>
           <span class="blog-tag">HiveBrain</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/multiagent">
         <div class="blog-date">Aug 2025</div>
         <div class="blog-title">Multi-Agent Systems Are the New Microservices</div>
         <div class="blog-excerpt">In 2015, the industry went from monoliths to microservices. In 2025, we're going from monolithic prompts to multi-agent systems. The parallel is striking: single-agent architectures hit the same walls monoliths did &mdash; they become unwieldy, hard to debug, and impossible to scale. My Organized Agents framework uses a Planner-Worker-Judge pattern inspired by how real engineering teams work. The Planner breaks down tasks. Workers execute in parallel. The Judge evaluates quality. Just like you wouldn't have one developer do everything, you shouldn't have one agent do everything. The results speak for themselves: complex supply chain analyses that took hours of manual work now run autonomously in minutes, with built-in quality gates.</div>
@@ -1181,10 +1178,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Architecture</span>
           <span class="blog-tag">Scaling</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/localllms">
         <div class="blog-date">Mar 2025</div>
         <div class="blog-title">Running LLMs Locally Changed My Entire Approach to AI Products</div>
         <div class="blog-excerpt">When I built my AI Social Media Manager, the initial plan was to use Claude or GPT-4 for content generation. Then I did the math: 4 posts per day, 365 days, multiple platforms &mdash; the API costs were a non-starter for a bootstrapped product. So I went local. Ollama + Mistral on my MacBook. Zero API cost. Full privacy. And here's the thing nobody talks about: for constrained, well-defined tasks like generating LinkedIn posts in a specific voice, a 7B parameter model running locally outperforms a frontier model with a generic prompt. The secret is in the system prompt engineering and the approval workflow, not the model size. I now default to local-first for any task that's repetitive and well-scoped. Cloud APIs are for the complex stuff.</div>
@@ -1193,10 +1189,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Ollama</span>
           <span class="blog-tag">Cost Optimization</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/llmcouncil">
         <div class="blog-date">Jun 2025</div>
         <div class="blog-title">What Happens When You Let Multiple LLMs Argue With Each Other</div>
         <div class="blog-excerpt">I built something weird over a weekend: an LLM Council. You send a query, it fans out to 5+ models simultaneously via OpenRouter, then each model reviews and ranks the others' answers anonymously. A "Chairman" LLM synthesizes the final response. The results were fascinating. Individual models have predictable blind spots. Claude is cautious about edge cases. GPT-4 is confident but sometimes wrong. Gemini is creative but verbose. But when they review each other? The council catches errors that no single model would. It's ensemble learning applied to reasoning. The anonymous review is key &mdash; without it, models defer to "consensus" instead of genuine critique. I'm now exploring using this pattern for automated code review where stakes are high.</div>
@@ -1205,10 +1200,9 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Ensemble AI</span>
           <span class="blog-tag">Experiment</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
-      <article class="blog-card reveal">
+      <a class="blog-card reveal" href="/blog/supplychain">
         <div class="blog-date">Apr 2025</div>
         <div class="blog-title">Supply Chain AI: Why Most Implementations Fail (And How Ours Didn't)</div>
         <div class="blog-excerpt">80% of enterprise AI projects fail. I know because I almost joined that statistic. When Flair Group was contracted by a $400M+ PPE manufacturer, the initial ask was "add AI to our supply chain." That's not a spec &mdash; that's a wish. The turnaround came when we stopped trying to build "AI" and started building dashboards that happened to use AI under the hood. Nobody cares about your multi-agent framework. They care that stockouts dropped 35%. The KPI dashboard we built doesn't say "powered by AI" anywhere. It just works: real-time visibility, JIT reorder alerts, churn predictions. The AI is invisible, and that's exactly the point. The lesson: ship value, not technology. Let the results do the talking.</div>
@@ -1217,8 +1211,7 @@ footer a{color:var(--accent);text-decoration:none}
           <span class="blog-tag">Enterprise AI</span>
           <span class="blog-tag">Lessons Learned</span>
         </div>
-        <div class="blog-read">Read more &rarr;</div>
-      </article>
+      </a>
 
     </div>
 
@@ -1483,38 +1476,7 @@ document.querySelectorAll('.nav-links a').forEach(a=>{
 });
 </script>
 
-<!-- View Switcher -->
-<div id="vs-dock">
-<style>
-#vs-dock{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10000;display:flex;gap:4px;padding:6px;border-radius:50px;background:rgba(15,15,20,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.vs-tab{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:40px;color:rgba(255,255,255,.5);text-decoration:none;font:500 13px/1 -apple-system,system-ui,sans-serif;transition:all .25s ease;white-space:nowrap;border:none;background:none;cursor:pointer}
-.vs-tab:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.06)}
-.vs-tab.vs-active{color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7);box-shadow:0 2px 12px rgba(124,58,237,.4)}
-.vs-tab svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
-@media(max-width:600px){#vs-dock{bottom:12px;gap:2px;padding:4px}.vs-tab{padding:7px 10px;font-size:11px;gap:4px}.vs-tab svg{width:14px;height:14px}.vs-tab span{display:none}.vs-tab.vs-active span{display:inline}}
-</style>
-<a class="vs-tab" href="index.html" data-vs="index"><svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg><span>Classic</span></a>
-<a class="vs-tab" href="concept-terminal.html" data-vs="terminal"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 14H4V8h16v10zm-8-2h6v-2h-6v2zM7.5 17l1.41-1.41L6.33 13l2.58-2.59L7.5 9l-4 4 4 4z"/></svg><span>Terminal</span></a>
-<a class="vs-tab" href="concept-neural.html" data-vs="neural"><svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73v1.52a5 5 0 013.54 1.46l1.07-.62A2 2 0 0120 6a2 2 0 010 4 2 2 0 01-1.73-1l-1.07.62A5 5 0 0117 12a5 5 0 01-.76 2.62l1.07.62A2 2 0 0120 14a2 2 0 010 4 2 2 0 01-2.39-3.22l-1.07-.62A5 5 0 0113 15.74v1.52A2 2 0 0114 19a2 2 0 11-4 0c0-.74.4-1.39 1-1.73v-1.52a5 5 0 01-3.54-1.46l-1.07.62A2 2 0 014 18a2 2 0 010-4c.74 0 1.39.4 1.73 1l1.07-.62A5 5 0 017 12c0-.93.26-1.8.76-2.62l-1.07-.62A2 2 0 014 10a2 2 0 010-4 2 2 0 012.39 3.22l1.07.62A5 5 0 0111 8.26V6.73A2 2 0 0110 5a2 2 0 012-3z"/></svg><span>Neural</span></a>
-<a class="vs-tab" href="concept-dashboard.html" data-vs="dashboard"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg><span>Dashboard</span></a>
-</div>
-<script>
-(function(){
-var p=location.pathname.split('/').pop()||'index.html';
-var fileMap={'index.html':'index','concept-terminal.html':'terminal','concept-neural.html':'neural','concept-dashboard.html':'dashboard'};
-var cur=fileMap[p]||'index';
-document.querySelectorAll('.vs-tab').forEach(function(a){
-if(a.dataset.vs===cur)a.classList.add('vs-active');
-a.addEventListener('click',function(e){
-if(a.classList.contains('vs-active')){e.preventDefault();return}
-e.preventDefault();
-document.body.style.transition='opacity .3s';document.body.style.opacity='0';
-setTimeout(function(){window.location.href=a.href},300);
-});
-});
-})();
-</script>
-<!-- /View Switcher -->
+<script src="view-switcher.js"></script>
 
 </body>
 </html>

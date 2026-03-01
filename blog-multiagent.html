@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Agent Systems Are the New Microservices — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="How multi-agent architectures mirror the monolith-to-microservices shift, and why the Planner-Worker-Judge pattern is the key to scaling AI systems.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/multi-agent-systems">
+<meta property="og:title" content="Multi-Agent Systems Are the New Microservices">
+<meta property="og:description" content="How multi-agent architectures mirror the monolith-to-microservices shift, and why the Planner-Worker-Judge pattern is the key to scaling AI systems.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+
+  <div class="blog-meta">
+    <span>Aug 2025</span>
+    <span class="blog-meta-tag">Multi-Agent</span>
+    <span class="blog-meta-tag">Architecture</span>
+    <span class="blog-meta-tag">Scaling</span>
+    <span>~7 min read</span>
+  </div>
+
+  <h1>Multi-Agent Systems Are the New Microservices</h1>
+
+  <p>In 2015, the software industry went through a tectonic shift. Monolithic applications -- single, tightly-coupled codebases that did everything -- were being broken apart into microservices. The reasoning was straightforward: as systems grew more complex, a single codebase couldn't scale. You needed independent, specialized services that could be developed, deployed, and scaled independently.</p>
+
+  <p>In 2025, we're watching the exact same pattern play out with AI. Monolithic prompts -- single, massive system instructions trying to handle every possible task -- are hitting the same scaling walls. The answer, once again, is decomposition. Multi-agent systems are the microservices of the AI era.</p>
+
+  <h2>The Microservices Parallel</h2>
+
+  <p>The similarities are striking, and they're not superficial:</p>
+
+  <ul>
+    <li><strong>Monolith vs. monolithic prompt</strong> -- A single application handling all business logic mirrors a single LLM call trying to handle planning, execution, and evaluation simultaneously.</li>
+    <li><strong>Service boundaries vs. agent specialization</strong> -- Microservices succeed because each service does one thing well. Agents succeed for the same reason. A planning agent plans. A coding agent codes. A review agent reviews.</li>
+    <li><strong>API contracts vs. message protocols</strong> -- Services communicate through well-defined APIs. Agents communicate through structured messages with clear schemas.</li>
+    <li><strong>Independent scaling vs. resource allocation</strong> -- You can scale a high-traffic microservice independently. You can allocate more compute to a bottleneck agent without affecting others.</li>
+    <li><strong>Failure isolation</strong> -- A bug in one microservice doesn't crash the whole application. A hallucination in one agent gets caught by the Judge before it propagates.</li>
+  </ul>
+
+  <p>The lesson from microservices was hard-won: decomposition isn't free. It introduces coordination overhead, distributed system complexity, and new failure modes. The same is true for multi-agent systems. But at sufficient scale, the benefits overwhelm the costs.</p>
+
+  <h2>Why Single Agents Fail at Scale</h2>
+
+  <p>A single LLM call is remarkably capable. Give it a focused task with clear context, and it performs well. The problems emerge when you ask it to do too many things at once.</p>
+
+  <p>Consider a supply chain analysis request: "Analyze our Q3 performance across all regions, identify the root causes of any stockouts, compare supplier reliability against contracted SLAs, and recommend procurement adjustments for Q4."</p>
+
+  <p>A single agent attempting this faces several compounding problems:</p>
+
+  <ul>
+    <li><strong>Context window saturation</strong> -- The data needed for a comprehensive analysis exceeds what fits in a single context window. You end up truncating or summarizing, losing the detail that matters.</li>
+    <li><strong>Role confusion</strong> -- The model is simultaneously analyst, strategist, and critic. It generates a recommendation and then has to evaluate its own recommendation. Self-evaluation is consistently weaker than external evaluation.</li>
+    <li><strong>Error accumulation</strong> -- In a long reasoning chain, each step has some probability of error. A 20-step analysis with 95% accuracy per step yields only 36% accuracy overall. With no checkpoints or validation, errors compound silently.</li>
+    <li><strong>Debugging opacity</strong> -- When the final output is wrong, there's no way to isolate which step failed. The entire chain is a black box.</li>
+  </ul>
+
+  <p>These aren't theoretical problems. I hit every one of them building AI systems for enterprise supply chain operations. The breaking point came when a single-agent analysis confidently recommended increasing orders from a supplier that was already flagged for delivery failures -- because the recommendation step didn't properly weigh the findings from the analysis step.</p>
+
+  <h2>The Planner-Worker-Judge Pattern</h2>
+
+  <p>The architecture I've settled on after extensive iteration is what I call Planner-Worker-Judge. It's simple enough to reason about, flexible enough to handle complex problems, and robust enough for production use.</p>
+
+  <pre># Planner-Worker-Judge: Core orchestration
+
+class Orchestrator:
+    def __init__(self):
+        self.planner = PlannerAgent(
+            model="claude-opus",
+            role="Decompose objectives into subtasks with clear success criteria"
+        )
+        self.workers = WorkerPool(
+            agents={
+                "data":     DataAgent(tools=["sql", "api", "csv"]),
+                "analysis": AnalysisAgent(tools=["pandas", "stats", "timeseries"]),
+                "research": ResearchAgent(tools=["search", "docs", "knowledge_base"]),
+                "code":     CodeAgent(tools=["read", "write", "test", "lint"]),
+            }
+        )
+        self.judge = JudgeAgent(
+            model="claude-opus",
+            role="Evaluate quality, consistency, and completeness"
+        )
+
+    def run(self, objective: str) -> Result:
+        # Phase 1: Planning
+        plan = self.planner.decompose(objective)
+        # => TaskGraph with dependencies, assignments, success criteria
+
+        # Phase 2: Execution
+        results = {}
+        for task in plan.topological_order():
+            worker = self.workers.assign(task)
+            context = {dep: results[dep] for dep in task.dependencies}
+            results[task.id] = worker.execute(task, context)
+
+        # Phase 3: Judgment
+        verdict = self.judge.evaluate(
+            objective=objective,
+            plan=plan,
+            results=results
+        )
+
+        if verdict.approved:
+            return verdict.final_output
+
+        # Feedback loop: Judge identifies specific failures
+        revised_plan = self.planner.revise(plan, verdict.feedback)
+        return self.run_revised(revised_plan, results, verdict)</pre>
+
+  <p>Each role has a clear responsibility and a clear boundary:</p>
+
+  <p>The <strong>Planner</strong> never executes. It only decomposes and coordinates. This separation prevents the common failure mode where a model starts executing before fully understanding the problem. The Planner outputs a task graph with explicit dependencies, assigned agent types, and measurable success criteria for each subtask.</p>
+
+  <p>The <strong>Workers</strong> are specialized and stateless. Each Worker has access to specific tools relevant to its domain. A data Worker can query databases but can't write code. A code Worker can read and write files but can't access production databases. This constraint isn't a limitation -- it's a feature. Specialization means each Worker can have focused system instructions, relevant few-shot examples, and appropriate tool access.</p>
+
+  <p>The <strong>Judge</strong> never generates original content. It only evaluates. This is critical. Self-evaluation is one of the weakest capabilities of LLMs. By separating the evaluator from the generator, you get dramatically more reliable quality assessment. The Judge checks for internal consistency, alignment with the original objective, factual accuracy against available data, and completeness.</p>
+
+  <h2>Implementation: Lessons from Production</h2>
+
+  <p>Running this pattern in production taught me several lessons that aren't obvious from the architecture diagram:</p>
+
+  <p><strong>Task graphs, not task lists.</strong> Early versions used flat task lists. This failed because many subtasks have dependencies. The Planner now outputs a directed acyclic graph (DAG) of tasks, and the orchestrator executes them in topological order, parallelizing independent branches.</p>
+
+  <p><strong>Typed messages between agents.</strong> Free-form text communication between agents is fragile. We switched to structured message schemas -- JSON with required fields for each message type. This made inter-agent communication reliable and debuggable.</p>
+
+  <p><strong>Budget constraints.</strong> Without limits, the feedback loop between Judge and Workers can run indefinitely. We cap revision cycles at three iterations and escalate to human review if the Judge still isn't satisfied. In practice, most tasks converge within two cycles.</p>
+
+  <p><strong>Observability from day one.</strong> Every agent call, every message, every tool invocation is logged with a trace ID. When something goes wrong -- and it will -- you need to reconstruct the full execution flow. This is the distributed tracing equivalent for multi-agent systems.</p>
+
+  <h2>Results</h2>
+
+  <p>For our supply chain operations, the transition from single-agent to multi-agent produced measurable improvements:</p>
+
+  <ul>
+    <li><strong>Complex analyses that took hours of analyst time now run autonomously in minutes.</strong> A full quarterly performance review across 12 regions, previously a two-day manual effort, completes in under 20 minutes with human review only at the final stage.</li>
+    <li><strong>Error rates dropped significantly.</strong> The Judge catches inconsistencies that single-agent systems propagate silently. Contradictory findings between regions get flagged before they reach stakeholders.</li>
+    <li><strong>Debuggability transformed.</strong> When a recommendation is questioned, we can trace exactly which Worker produced which finding, which data sources were consulted, and how the Judge weighed competing evidence.</li>
+  </ul>
+
+  <h2>Anti-Patterns to Avoid</h2>
+
+  <p>Multi-agent systems have their own failure modes, and I've hit most of them:</p>
+
+  <ul>
+    <li><strong>Too many agents.</strong> The microservices world learned this lesson with "nano-services" -- services so small they create more coordination overhead than they solve. Same risk here. If a task doesn't benefit from specialization, don't create a separate agent for it. Start with three (Planner, Worker, Judge) and add specialization only when you have evidence it helps.</li>
+    <li><strong>Chatty agents.</strong> Agents that exchange long, unstructured messages waste tokens and introduce noise. Keep inter-agent communication terse and structured. An agent should send data and conclusions, not stream-of-consciousness reasoning.</li>
+    <li><strong>Missing failure boundaries.</strong> If a Worker fails, the system should degrade gracefully. Retry with different parameters, skip the subtask and note the gap, or escalate. Never let a single Worker failure cascade into a full system failure.</li>
+    <li><strong>Premature optimization.</strong> Don't start with multi-agent. Start with a single agent. When it breaks -- when you can identify the specific failure mode that decomposition would solve -- then decompose. Multi-agent is a scaling strategy, not a starting point.</li>
+  </ul>
+
+  <div class="blog-divider"></div>
+
+  <h2>The Takeaway</h2>
+
+  <p>The parallels between the microservices revolution and the multi-agent revolution aren't coincidental. They're both responses to the same fundamental problem: complex systems that outgrow monolithic architectures.</p>
+
+  <p>The microservices transition took the industry roughly a decade. AI systems are moving faster because we have the benefit of those hard-won lessons. We know that decomposition works. We know that clear boundaries matter. We know that observability is non-negotiable. We know that you should start simple and decompose only when complexity demands it.</p>
+
+  <p>The question isn't whether multi-agent systems will become the default architecture for complex AI applications. It's how quickly we can apply the lessons from the last architectural revolution to this one. The Planner-Worker-Judge pattern is one answer. There will be others. But the direction is clear: the monolithic prompt is the new monolith, and its days are numbered.</p>
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

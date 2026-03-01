@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stack Overflow — Merwan's Games</title>
+<meta name="description" content="Stack Overflow — a stacking game by Merwan T Djerbi. Time your drops perfectly to build the tallest tower.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://merwandjerbi.com/game-stack.html">
+<meta property="og:title" content="Stack Overflow — Merwan's Games">
+<meta property="og:description" content="Stack Overflow — a stacking game by Merwan T Djerbi. Time your drops perfectly to build the tallest tower.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='monospace' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg2:#111119;--border:#2a2a3a;--text:#e0e0ec;--text2:#9898b2;--accent:#B07FE0;--accent2:#00b8ff;--green:#22c55e;--mono:'JetBrains Mono',monospace;--sans:'Sora',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;width:100vw;height:100vh;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100vw;height:100vh}
+a{color:var(--accent);text-decoration:none}
+.back-link{position:fixed;top:18px;left:20px;font-size:13px;color:var(--text2);font-family:var(--mono);z-index:100;text-decoration:none}
+.back-link:hover{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+</style>
+<link rel="stylesheet" href="view-switcher.css">
+</head>
+<body>
+<a class="back-link" href="games.html">&larr; Back to Games</a>
+<canvas id="gc"></canvas>
+
+<script>
+(function(){
+'use strict';
+
+// --- Constants ---
+const TECHS = ['HTML','CSS','JS','React','Node','Python','Docker','K8s','AWS','Redis','PostgreSQL','FastAPI','LangChain','Git','Linux','TypeScript'];
+const COLORS = ['#B07FE0','#00b8ff','#7b61ff','#22c55e','#eab308','#ef4444'];
+const BLOCK_HEIGHT = 32;
+const PERFECT_TOLERANCE = 3;
+const BASE_SPEED = 2.5;
+const SPEED_INCREMENT = 0.12;
+const INITIAL_WIDTH = 200;
+const GRAVITY = 0.4;
+
+// --- Canvas Setup ---
+const canvas = document.getElementById('gc');
+const ctx = canvas.getContext('2d');
+let W, H, dpr;
+
+function resize() {
+  dpr = window.devicePixelRatio || 1;
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resize();
+window.addEventListener('resize', resize);
+
+// --- State ---
+const STATE = { START: 0, PLAYING: 1, GAMEOVER: 2 };
+let state = STATE.START;
+let score = 0;
+let highScore = parseInt(localStorage.getItem('stack_high') || '0', 10);
+let combo = 0;
+let tower = [];        // stacked blocks: { x, w, color, tech }
+let current = null;    // sliding block: { x, w, color, tech, dir, speed }
+let debris = [];       // falling pieces: { x, y, w, h, color, vx, vy, rot, vrot, alpha }
+let cameraY = 0;       // camera offset (smooth)
+let targetCameraY = 0;
+let shakeX = 0, shakeY = 0, shakeMag = 0;
+let perfectFlash = { active: false, timer: 0, text: '', x: 0, y: 0 };
+let gridOffset = 0;
+
+// --- Helpers ---
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function getColor(i) { return COLORS[i % COLORS.length]; }
+function getTech(i) { return TECHS[i % TECHS.length]; }
+
+// --- Game Logic ---
+function resetGame() {
+  score = 0;
+  combo = 0;
+  tower = [];
+  debris = [];
+  cameraY = 0;
+  targetCameraY = 0;
+  shakeMag = 0;
+  perfectFlash.active = false;
+
+  // Base block
+  const baseX = W / 2 - INITIAL_WIDTH / 2;
+  tower.push({ x: baseX, w: INITIAL_WIDTH, color: getColor(0), tech: getTech(0) });
+  spawnBlock();
+}
+
+function spawnBlock() {
+  const top = tower[tower.length - 1];
+  const idx = tower.length;
+  const speed = BASE_SPEED + idx * SPEED_INCREMENT;
+  current = {
+    x: -top.w,
+    w: top.w,
+    color: getColor(idx),
+    tech: getTech(idx),
+    dir: 1,
+    speed: speed
+  };
+}
+
+function getBlockY(index) {
+  return H - 60 - (index + 1) * BLOCK_HEIGHT;
+}
+
+function dropBlock() {
+  if (!current) return;
+
+  const top = tower[tower.length - 1];
+  const topIdx = tower.length - 1;
+
+  const overlapStart = Math.max(current.x, top.x);
+  const overlapEnd = Math.min(current.x + current.w, top.x + top.w);
+  const overlapW = overlapEnd - overlapStart;
+
+  if (overlapW <= 0) {
+    // Miss — entire block falls as debris
+    const blockY = getBlockY(tower.length);
+    debris.push({
+      x: current.x, y: blockY + cameraY, w: current.w, h: BLOCK_HEIGHT,
+      color: current.color, vx: current.dir * 1.5, vy: 0, rot: 0, vrot: current.dir * 0.03, alpha: 1
+    });
+    shakeMag = 8;
+    current = null;
+    state = STATE.GAMEOVER;
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('stack_high', String(highScore));
+    }
+    return;
+  }
+
+  const isPerfect = Math.abs(overlapW - current.w) < PERFECT_TOLERANCE && Math.abs(current.x - top.x) < PERFECT_TOLERANCE;
+
+  let placedW, placedX;
+  if (isPerfect) {
+    placedW = top.w;
+    placedX = top.x;
+    combo++;
+    perfectFlash.active = true;
+    perfectFlash.timer = 1;
+    perfectFlash.text = combo > 1 ? 'PERFECT! x' + combo : 'PERFECT!';
+    perfectFlash.x = W / 2;
+    perfectFlash.y = getBlockY(tower.length) + BLOCK_HEIGHT / 2;
+    shakeMag = 4;
+  } else {
+    placedW = overlapW;
+    placedX = overlapStart;
+    combo = 0;
+    shakeMag = 6;
+
+    // Create debris for the sliced-off part
+    const blockY = getBlockY(tower.length);
+    let debrisX, debrisW;
+    if (current.x < top.x) {
+      debrisX = current.x;
+      debrisW = top.x - current.x;
+    } else {
+      debrisX = overlapEnd;
+      debrisW = (current.x + current.w) - overlapEnd;
+    }
+    if (debrisW > 1) {
+      debris.push({
+        x: debrisX, y: blockY + cameraY, w: debrisW, h: BLOCK_HEIGHT,
+        color: current.color, vx: (current.x < top.x ? -2 : 2), vy: 0,
+        rot: 0, vrot: (current.x < top.x ? -0.04 : 0.04), alpha: 1
+      });
+    }
+  }
+
+  tower.push({ x: placedX, w: placedW, color: current.color, tech: current.tech });
+  score++;
+
+  // Camera
+  const blockY = getBlockY(tower.length);
+  if (blockY < H * 0.35) {
+    targetCameraY = (H * 0.35) - blockY;
+  }
+
+  spawnBlock();
+}
+
+// --- Update ---
+function update() {
+  // Screen shake decay
+  if (shakeMag > 0) {
+    shakeX = (Math.random() - 0.5) * shakeMag * 2;
+    shakeY = (Math.random() - 0.5) * shakeMag * 2;
+    shakeMag *= 0.85;
+    if (shakeMag < 0.3) { shakeMag = 0; shakeX = 0; shakeY = 0; }
+  }
+
+  // Camera smooth lerp
+  cameraY = lerp(cameraY, targetCameraY, 0.08);
+
+  // Grid scroll
+  gridOffset = (gridOffset + 0.3) % 40;
+
+  // Perfect flash
+  if (perfectFlash.active) {
+    perfectFlash.timer -= 0.025;
+    if (perfectFlash.timer <= 0) perfectFlash.active = false;
+  }
+
+  // Debris
+  for (let i = debris.length - 1; i >= 0; i--) {
+    const d = debris[i];
+    d.vy += GRAVITY;
+    d.x += d.vx;
+    d.y += d.vy;
+    d.rot += d.vrot;
+    d.alpha -= 0.008;
+    if (d.alpha <= 0 || d.y > H + 200) {
+      debris.splice(i, 1);
+    }
+  }
+
+  if (state === STATE.PLAYING && current) {
+    current.x += current.speed * current.dir;
+    // Bounce off edges
+    const margin = 40;
+    if (current.x + current.w > W + margin) { current.dir = -1; }
+    if (current.x < -margin) { current.dir = 1; }
+  }
+}
+
+// --- Render ---
+function drawBlock(x, y, w, h, color, tech, glow) {
+  // Block body
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.85;
+  ctx.fillRect(x, y, w, h);
+  ctx.globalAlpha = 1;
+
+  // Glow border
+  if (glow) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+    ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+    ctx.shadowBlur = 0;
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
+    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+    ctx.globalAlpha = 1;
+  }
+
+  // Tech label
+  if (tech && w > 30) {
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '500 ' + Math.min(14, w * 0.14) + 'px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.globalAlpha = 0.9;
+    ctx.fillText(tech, x + w / 2, y + h / 2);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawGrid() {
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 1;
+  const spacing = 40;
+  for (let gx = 0; gx < W; gx += spacing) {
+    ctx.beginPath();
+    ctx.moveTo(gx, 0);
+    ctx.lineTo(gx, H);
+    ctx.stroke();
+  }
+  for (let gy = -spacing + (gridOffset % spacing); gy < H; gy += spacing) {
+    ctx.beginPath();
+    ctx.moveTo(0, gy);
+    ctx.lineTo(W, gy);
+    ctx.stroke();
+  }
+}
+
+function drawBackground() {
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#0a0a0f');
+  grad.addColorStop(1, '#111119');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+  drawGrid();
+}
+
+function render() {
+  drawBackground();
+
+  ctx.save();
+  ctx.translate(shakeX, shakeY);
+
+  if (state === STATE.START) {
+    drawStartScreen();
+  } else if (state === STATE.PLAYING || state === STATE.GAMEOVER) {
+    drawGame();
+    if (state === STATE.GAMEOVER) {
+      drawGameOver();
+    }
+  }
+
+  ctx.restore();
+}
+
+function drawStartScreen() {
+  // Title
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Gradient text effect (fake with two layers)
+  ctx.font = '700 ' + Math.min(48, W * 0.1) + 'px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#B07FE0';
+  ctx.shadowColor = '#B07FE0';
+  ctx.shadowBlur = 30;
+  ctx.fillText('STACK OVERFLOW', W / 2, H * 0.35);
+  ctx.shadowBlur = 0;
+
+  ctx.font = '400 16px "Sora", sans-serif';
+  ctx.fillStyle = '#9898b2';
+  ctx.fillText('Tap to stack', W / 2, H * 0.35 + 50);
+
+  // Draw demo tower
+  const demoBlocks = 5;
+  const demoW = 140;
+  const demoBaseX = W / 2 - demoW / 2;
+  for (let i = 0; i < demoBlocks; i++) {
+    const shrink = i * 8;
+    const bw = demoW - shrink;
+    const bx = W / 2 - bw / 2;
+    const by = H * 0.65 - i * BLOCK_HEIGHT;
+    drawBlock(bx, by, bw, BLOCK_HEIGHT, getColor(i), getTech(i), i === demoBlocks - 1);
+  }
+
+  // High score
+  if (highScore > 0) {
+    ctx.font = '400 14px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#eab308';
+    ctx.fillText('High Score: ' + highScore, W / 2, H * 0.85);
+  }
+
+  // Controls hint
+  ctx.font = '300 12px "Sora", sans-serif';
+  ctx.fillStyle = '#555568';
+  ctx.fillText('Click / Tap / Spacebar', W / 2, H * 0.9);
+}
+
+function drawGame() {
+  ctx.save();
+  ctx.translate(0, cameraY);
+
+  // Draw tower blocks
+  for (let i = 0; i < tower.length; i++) {
+    const b = tower[i];
+    const by = getBlockY(i);
+    const isTop = (i === tower.length - 1);
+    // Combo glow on top block
+    const glow = isTop && combo > 0;
+    drawBlock(b.x, by, b.w, BLOCK_HEIGHT, b.color, b.tech, glow);
+  }
+
+  // Draw current sliding block
+  if (current && state === STATE.PLAYING) {
+    const cy = getBlockY(tower.length);
+    drawBlock(current.x, cy, current.w, BLOCK_HEIGHT, current.color, current.tech, true);
+  }
+
+  // Draw debris
+  for (const d of debris) {
+    ctx.save();
+    ctx.globalAlpha = d.alpha;
+    ctx.translate(d.x + d.w / 2, d.y + d.h / 2);
+    ctx.rotate(d.rot);
+    ctx.fillStyle = d.color;
+    ctx.fillRect(-d.w / 2, -d.h / 2, d.w, d.h);
+    ctx.restore();
+  }
+
+  // Perfect flash
+  if (perfectFlash.active) {
+    const t = perfectFlash.timer;
+    const scale = 1 + (1 - t) * 1.5;
+    ctx.save();
+    ctx.translate(perfectFlash.x, perfectFlash.y);
+    ctx.scale(scale, scale);
+    ctx.globalAlpha = t;
+    ctx.font = '700 24px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#eab308';
+    ctx.shadowColor = '#eab308';
+    ctx.shadowBlur = 20;
+    ctx.fillText(perfectFlash.text, 0, 0);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  ctx.restore();
+
+  // HUD — Score
+  ctx.font = '700 28px "JetBrains Mono", monospace';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = '#e0e0ec';
+  ctx.fillText(String(score), W - 24, 24);
+
+  // Combo counter
+  if (combo >= 2 && state === STATE.PLAYING) {
+    ctx.font = '600 18px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#eab308';
+    ctx.globalAlpha = 0.9;
+    ctx.fillText('x' + combo + ' COMBO', W - 24, 58);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawGameOver() {
+  // Overlay
+  ctx.fillStyle = 'rgba(10, 10, 15, 0.7)';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Title
+  ctx.font = '700 ' + Math.min(42, W * 0.09) + 'px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#ef4444';
+  ctx.shadowColor = '#ef4444';
+  ctx.shadowBlur = 25;
+  ctx.fillText('STACK OVERFLOW!', W / 2, H * 0.35);
+  ctx.shadowBlur = 0;
+
+  // Score
+  ctx.font = '400 20px "Sora", sans-serif';
+  ctx.fillStyle = '#e0e0ec';
+  ctx.fillText('Height: ' + score, W / 2, H * 0.45);
+
+  // High score
+  ctx.font = '400 16px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#eab308';
+  ctx.fillText('Best: ' + highScore, W / 2, H * 0.52);
+
+  // Retry
+  ctx.font = '400 15px "Sora", sans-serif';
+  ctx.fillStyle = '#9898b2';
+  ctx.fillText('Tap to retry', W / 2, H * 0.62);
+}
+
+// --- Game Loop ---
+function loop() {
+  update();
+  render();
+  requestAnimationFrame(loop);
+}
+
+// --- Input ---
+function handleInput(e) {
+  if (e) e.preventDefault();
+  if (state === STATE.START) {
+    state = STATE.PLAYING;
+    resetGame();
+  } else if (state === STATE.PLAYING) {
+    dropBlock();
+  } else if (state === STATE.GAMEOVER) {
+    state = STATE.PLAYING;
+    resetGame();
+  }
+}
+
+canvas.addEventListener('pointerdown', handleInput);
+document.addEventListener('keydown', function(e) {
+  if (e.code === 'Space' || e.key === ' ') {
+    e.preventDefault();
+    handleInput();
+  }
+});
+
+// Start loop
+loop();
+
+})();
+</script>
+
+<script src="view-switcher.js"></script>
+</body>
+</html>

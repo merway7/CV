@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Happens When You Let Multiple LLMs Argue With Each Other — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="Building an LLM Council where multiple AI models review each other's answers anonymously, catching errors no single model would find.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/llmcouncil">
+<meta property="og:title" content="What Happens When You Let Multiple LLMs Argue With Each Other">
+<meta property="og:description" content="Building an LLM Council where multiple AI models review each other's answers anonymously, catching errors no single model would find.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+
+  <div class="blog-meta">
+    <span>Jun 2025</span>
+    <span class="blog-meta-tag">LLM Council</span>
+    <span class="blog-meta-tag">Ensemble AI</span>
+    <span class="blog-meta-tag">Experiment</span>
+    <span>~6 min read</span>
+  </div>
+
+  <h1>What Happens When You Let Multiple LLMs Argue With Each Other</h1>
+
+  <p>It started as a late-night experiment. I was frustrated by a recurring problem: I'd ask an LLM a technical question, get a confident answer, ship it, and discover a subtle bug two days later. The model wasn't wrong exactly -- it just had blind spots. Every model does. The question was whether those blind spots overlap.</p>
+
+  <p>Spoiler: they don't. And that insight became the foundation for something I call the LLM Council.</p>
+
+  <h2>The Idea</h2>
+
+  <p>The concept is borrowed from ensemble methods in traditional machine learning. A random forest outperforms a single decision tree not because any individual tree is brilliant, but because their errors are uncorrelated. What if the same principle applied to large language models?</p>
+
+  <p>The hypothesis: if you send the same query to multiple LLMs, have them review each other's answers anonymously, and then synthesize the results, the output should be more reliable than any single model's response.</p>
+
+  <p>So I built it. A system that fans out a query to 5+ models via OpenRouter, collects their responses, runs an anonymous peer review round, and has a "Chairman" model synthesize the final answer. The whole pipeline takes 15-30 seconds depending on the models used, but the quality improvement is dramatic.</p>
+
+  <h2>Architecture: Fan-Out, Review, Synthesize</h2>
+
+  <p>The system has three stages. Here's the core orchestration logic:</p>
+
+<pre>async def run_council(query: str, models: list[str]) -> CouncilResult:
+    # Stage 1: Fan-out -- all models answer in parallel
+    responses = await asyncio.gather(*[
+        query_model(model, query) for model in models
+    ])
+
+    # Stage 2: Anonymous review -- each model reviews all others
+    reviews = []
+    for reviewer_idx, reviewer in enumerate(models):
+        other_responses = [
+            {"id": f"Response {chr(65+i)}", "content": r.content}
+            for i, r in enumerate(responses) if i != reviewer_idx
+        ]
+        review = await query_model(reviewer, build_review_prompt(
+            original_query=query,
+            responses=other_responses
+        ))
+        reviews.append(review)
+
+    # Stage 3: Chairman synthesizes
+    chairman = "anthropic/claude-sonnet-4"
+    final = await query_model(chairman, build_synthesis_prompt(
+        query=query,
+        responses=responses,
+        reviews=reviews
+    ))
+    return CouncilResult(final=final, responses=responses, reviews=reviews)</pre>
+
+  <p>The critical design decision is in Stage 2: <strong>anonymous review</strong>. Models don't know which model produced which response. They see "Response A," "Response B," etc. This prevents brand bias -- models tend to defer to responses they suspect came from a "stronger" model. Anonymity forces them to evaluate on content alone.</p>
+
+  <h2>The Voting System</h2>
+
+  <p>Each reviewer scores the other responses on three dimensions: correctness, completeness, and clarity. The scoring prompt is deliberately structured to force differentiation:</p>
+
+<pre>REVIEW_PROMPT = """You are reviewing {n} responses to the following query:
+"{query}"
+
+For each response, score on a 1-5 scale:
+- CORRECTNESS: Are the facts and logic accurate?
+- COMPLETENESS: Does it address all aspects of the query?
+- CLARITY: Is it well-structured and easy to follow?
+
+You MUST assign different scores. No ties allowed.
+Identify specific errors or omissions in each response.
+
+Rank the responses from best to worst with justification."""</pre>
+
+  <p>The "no ties" rule is important. Without it, models tend to rate everything 4/5 to avoid conflict. Forcing differentiation produces much more useful signal for the synthesis stage.</p>
+
+  <h2>Model Personality Profiles</h2>
+
+  <p>After running hundreds of queries through the council, clear personality patterns emerged across models. These aren't anthropomorphic projections -- they're measurable tendencies in how models approach the same problem.</p>
+
+  <p><strong>Claude (Sonnet/Opus)</strong> is the cautious analyst. It hedges. It qualifies. It says "it depends" a lot. During review, Claude is the most likely to flag edge cases that others missed. Its weakness: sometimes the hedging obscures a clear answer. When Claude is confident, pay attention -- it usually means the answer is solid.</p>
+
+  <p><strong>GPT-4</strong> is the confident generalist. It gives direct, well-structured answers and rarely hedges. During review, it's the harshest critic -- quick to identify logical flaws. Its weakness: overconfidence. When GPT-4 is wrong, it's wrong with full conviction, which can mislead the synthesis stage if not caught by other reviewers.</p>
+
+  <p><strong>Gemini</strong> is the creative diverger. It often approaches problems from unexpected angles and surfaces considerations others miss entirely. During review, it provides the most detailed critiques. Its weakness: verbosity and occasional tangents. It sometimes brings up valid but irrelevant points that dilute focus.</p>
+
+  <p><strong>Llama/Mixtral (open source)</strong> are the practical implementers. They tend to jump straight to code or concrete steps. Less philosophical, more hands-on. During review, they catch implementation-level issues that the commercial models gloss over. Their weakness: they occasionally miss higher-level architectural concerns.</p>
+
+  <h2>Surprising Results</h2>
+
+  <p>Three findings genuinely surprised me:</p>
+
+  <p><strong>1. The council catches errors no single model would.</strong> In a test with 50 technical questions where I knew the correct answer, the best individual model (Claude Opus) scored 82% accuracy. The council scored 94%. The improvement came almost entirely from the review stage -- models catching each other's mistakes.</p>
+
+  <p><strong>2. Minority opinions are often right.</strong> In about 15% of cases, one model disagreed with the majority -- and the dissenter was correct. This is why the chairman model is instructed to weigh minority opinions carefully rather than just going with consensus. Majority voting alone would have missed these cases.</p>
+
+  <p><strong>3. Model agreement is a confidence signal.</strong> When all 5 models independently produce the same answer, it's correct 99% of the time. When they diverge significantly, it usually means the question is genuinely ambiguous or requires domain expertise none of them have. The degree of agreement is itself valuable metadata.</p>
+
+  <h2>The Anonymous Review Insight</h2>
+
+  <p>I ran an A/B test: council with anonymous review vs. council with attributed review (where models knew which model produced each response). The results were stark.</p>
+
+  <p>With attribution, models deferred to Claude and GPT-4 responses roughly 40% more often, regardless of quality. Gemini and open-source model responses were rated lower even when they contained the correct answer. The brand bias was measurable and consistent.</p>
+
+  <p>Anonymous review eliminated this entirely. Responses were evaluated on their merits. This mirrors a well-known finding in human peer review: double-blind review produces fairer evaluations than single-blind. Turns out LLMs have the same bias.</p>
+
+  <blockquote>"The best answer doesn't always come from the biggest model. But you'll never discover that if you let the models see each other's name tags."</blockquote>
+
+  <h2>Applications Beyond Chat</h2>
+
+  <p>The council pattern has applications far beyond question-answering. I'm currently exploring two:</p>
+
+  <p><strong>Automated code review.</strong> Fan out a code diff to multiple models, have each review independently, synthesize into a comprehensive review. Early results show the council catches 2-3x more issues than any single model, with fewer false positives because the review stage filters out nitpicks that only one model cares about.</p>
+
+  <p><strong>Content verification.</strong> For any AI-generated content that matters -- documentation, technical writing, customer communications -- the council acts as a quality gate. Three models generate, two models review, one synthesizes. The output is more accurate and more balanced than single-model generation.</p>
+
+  <div class="blog-divider"></div>
+
+  <p>The LLM Council isn't a product. It's a pattern -- one that acknowledges a fundamental truth about the current state of AI: no single model is reliable enough for high-stakes decisions. But an ensemble of models, reviewing each other anonymously, comes remarkably close.</p>
+
+  <p>The cost is 5-6x a single model call. For most chat applications, that's overkill. But for decisions that matter -- code that ships to production, content that represents your brand, analysis that drives business decisions -- the council is the most cost-effective quality improvement I've found. It's cheaper than a human reviewer and available 24/7.</p>
+
+  <p>If you're building AI systems where accuracy matters more than speed, stop asking one model and start convening a council.</p>
+
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

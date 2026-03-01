@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Type Sprint — Merwan's Games</title>
+<meta name="description" content="TypeSprint — a typing speed game with code snippets by Merwan T Djerbi. Test your WPM on real programming syntax.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://merwandjerbi.com/game-typing.html">
+<meta property="og:title" content="Type Sprint — Merwan's Games">
+<meta property="og:description" content="TypeSprint — a typing speed game with code snippets by Merwan T Djerbi. Test your WPM on real programming syntax.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='monospace' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg2:#111119;--bg3:#1a1a25;--surface:#16161f;--border:#2a2a3a;--text:#e0e0ec;--text2:#9898b2;--accent:#B07FE0;--accent2:#00b8ff;--green:#22c55e;--red:#ef4444;--mono:'JetBrains Mono',monospace;--sans:'Sora',sans-serif}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;align-items:center}
+
+a{color:var(--accent);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent2)}
+
+.back-link{position:fixed;top:20px;left:24px;z-index:100;font-size:14px;font-weight:500;display:flex;align-items:center;gap:6px;color:var(--text2);transition:color .2s}
+.back-link:hover{color:var(--text)}
+.back-link svg{width:16px;height:16px;fill:currentColor}
+
+/* Timer bar */
+#timer-bar{position:fixed;top:0;left:0;height:4px;width:100%;z-index:200;background:var(--bg3);overflow:hidden}
+#timer-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--red),var(--accent));transform-origin:left;transition:transform .1s linear;border-radius:0 2px 2px 0}
+
+/* Stats row */
+#stats-row{position:fixed;top:16px;right:24px;z-index:100;display:flex;gap:24px;align-items:flex-start;opacity:0;transition:opacity .3s}
+#stats-row.visible{opacity:1}
+.stat-box{text-align:right}
+.stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.stat-value{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text)}
+.stat-value.timer-val{color:var(--accent)}
+.stat-value.timer-warn{color:var(--red)}
+
+/* Screens */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s,visibility .3s;padding:24px}
+.screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Start screen */
+#start-screen .title{font-family:var(--mono);font-size:48px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+#start-screen .subtitle{color:var(--text2);font-size:16px;margin-bottom:40px}
+#start-screen .best{font-family:var(--mono);font-size:14px;color:var(--text2);margin-bottom:8px}
+#start-screen .best span{color:var(--green);font-weight:700;font-size:18px}
+#start-screen .prompt{color:var(--text2);font-size:14px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* Game screen */
+#game-screen{padding-top:60px}
+#category-tag{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);background:rgba(176,127,224,.1);padding:6px 16px;border-radius:20px;border:1px solid rgba(176,127,224,.2);margin-bottom:20px}
+#snippet-display{font-family:var(--mono);font-size:24px;line-height:1.8;letter-spacing:1px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 48px;max-width:800px;width:100%;text-align:left;position:relative;min-height:100px;display:flex;flex-wrap:wrap;align-items:center;word-break:break-all}
+#snippet-display .char{display:inline;position:relative;transition:color .05s}
+#snippet-display .char.correct{color:var(--green)}
+#snippet-display .char.wrong{color:var(--red);background:rgba(239,68,68,.3);border-radius:2px}
+#snippet-display .char.current{color:#fff}
+#snippet-display .char.current::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:2px;background:#fff;animation:blink .8s step-end infinite}
+#snippet-display .char.untyped{color:var(--text2)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+#snippets-done{font-family:var(--mono);font-size:13px;color:var(--text2);margin-top:16px}
+
+/* Results screen */
+#results-screen .result-title{font-family:var(--mono);font-size:20px;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:2px}
+#results-screen .result-wpm{font-family:var(--mono);font-size:80px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:4px}
+#results-screen .result-wpm-label{font-size:14px;color:var(--text2);margin-bottom:32px}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:40px;max-width:500px;width:100%}
+.result-stat{text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 16px}
+.result-stat .val{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--text);margin-bottom:4px}
+.result-stat .lbl{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+#results-screen .new-best{font-family:var(--mono);font-size:14px;color:var(--green);margin-bottom:16px;opacity:0;transition:opacity .3s}
+#results-screen .new-best.show{opacity:1}
+#results-screen .retry-prompt{color:var(--text2);font-size:14px;animation:pulse 2s ease-in-out infinite}
+
+@media(max-width:600px){
+  #snippet-display{font-size:18px;padding:24px;border-radius:12px}
+  #start-screen .title{font-size:32px}
+  .results-grid{grid-template-columns:repeat(3,1fr);gap:12px}
+  .result-stat .val{font-size:20px}
+  .stat-value{font-size:16px}
+  #stats-row{gap:14px;right:16px}
+  #results-screen .result-wpm{font-size:56px}
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+</style>
+<link rel="stylesheet" href="view-switcher.css">
+</head>
+<body>
+
+<a class="back-link" href="games.html"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Back to Games</a>
+
+<div id="timer-bar"><div id="timer-fill"></div></div>
+
+<div id="stats-row">
+  <div class="stat-box">
+    <div class="stat-label">Timer</div>
+    <div class="stat-value timer-val" id="timer-display">60</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">WPM</div>
+    <div class="stat-value" id="wpm-display">0</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">Accuracy</div>
+    <div class="stat-value" id="acc-display">100%</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">Chars</div>
+    <div class="stat-value" id="chars-display">0</div>
+  </div>
+</div>
+
+<!-- Start Screen -->
+<div class="screen" id="start-screen">
+  <div class="title">TYPE SPRINT</div>
+  <div class="subtitle">Type real code snippets as fast as you can</div>
+  <div class="best" id="best-display"></div>
+  <div class="prompt">Press any key to start</div>
+</div>
+
+<!-- Game Screen -->
+<div class="screen hidden" id="game-screen">
+  <div id="category-tag">PYTHON</div>
+  <div id="snippet-display"></div>
+  <div id="snippets-done">Snippets completed: 0</div>
+</div>
+
+<!-- Results Screen -->
+<div class="screen hidden" id="results-screen">
+  <div class="result-title">Results</div>
+  <div class="result-wpm" id="result-wpm">0</div>
+  <div class="result-wpm-label">words per minute</div>
+  <div class="new-best" id="new-best-msg">New personal best!</div>
+  <div class="results-grid">
+    <div class="result-stat"><div class="val" id="result-acc">0%</div><div class="lbl">Accuracy</div></div>
+    <div class="result-stat"><div class="val" id="result-chars">0</div><div class="lbl">Characters</div></div>
+    <div class="result-stat"><div class="val" id="result-snippets">0</div><div class="lbl">Snippets</div></div>
+  </div>
+  <div class="retry-prompt">Press SPACE to retry</div>
+</div>
+
+<script>
+(function(){
+  const GAME_DURATION = 60;
+
+  const snippets = [
+    { cat: 'PYTHON', text: 'def fibonacci(n):' },
+    { cat: 'PYTHON', text: 'for i in range(10):' },
+    { cat: 'PYTHON', text: 'import pandas as pd' },
+    { cat: 'PYTHON', text: 'if __name__ == "__main__":' },
+    { cat: 'PYTHON', text: 'with open("data.json") as f:' },
+    { cat: 'PYTHON', text: 'async def fetch(url):' },
+    { cat: 'PYTHON', text: 'class Agent(BaseModel):' },
+    { cat: 'PYTHON', text: 'result = await chain.invoke(query)' },
+    { cat: 'PYTHON', text: 'df.groupby("category").mean()' },
+    { cat: 'PYTHON', text: '@app.post("/api/predict")' },
+    { cat: 'JAVASCRIPT', text: 'const app = express();' },
+    { cat: 'JAVASCRIPT', text: 'async function getData() {' },
+    { cat: 'JAVASCRIPT', text: 'document.querySelector("#app")' },
+    { cat: 'JAVASCRIPT', text: 'export default function App()' },
+    { cat: 'JAVASCRIPT', text: 'const [state, setState] = useState()' },
+    { cat: 'JAVASCRIPT', text: 'arr.filter(x => x > 0).map(fn)' },
+    { cat: 'JAVASCRIPT', text: 'fetch("/api/data").then(res =>' },
+    { cat: 'JAVASCRIPT', text: 'try { await db.query(sql) }' },
+    { cat: 'JAVASCRIPT', text: 'router.get("/users/:id", handler)' },
+    { cat: 'JAVASCRIPT', text: 'Object.keys(config).forEach(k =>' },
+    { cat: 'SQL', text: 'SELECT * FROM users WHERE' },
+    { cat: 'SQL', text: 'INSERT INTO logs VALUES (' },
+    { cat: 'SQL', text: 'CREATE TABLE sessions (' },
+    { cat: 'SQL', text: 'JOIN orders ON users.id =' },
+    { cat: 'SQL', text: 'GROUP BY category HAVING COUNT' },
+    { cat: 'SHELL', text: 'docker build -t app .' },
+    { cat: 'SHELL', text: 'git commit -m "fix: auth"' },
+    { cat: 'SHELL', text: 'kubectl apply -f deploy.yaml' },
+    { cat: 'SHELL', text: 'ssh user@server -p 2222' },
+    { cat: 'SHELL', text: 'curl -X POST localhost:3000' },
+  ];
+
+  // Shuffle helper
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // DOM refs
+  const startScreen = document.getElementById('start-screen');
+  const gameScreen = document.getElementById('game-screen');
+  const resultsScreen = document.getElementById('results-screen');
+  const statsRow = document.getElementById('stats-row');
+  const timerFill = document.getElementById('timer-fill');
+  const timerDisplay = document.getElementById('timer-display');
+  const wpmDisplay = document.getElementById('wpm-display');
+  const accDisplay = document.getElementById('acc-display');
+  const charsDisplay = document.getElementById('chars-display');
+  const categoryTag = document.getElementById('category-tag');
+  const snippetDisplay = document.getElementById('snippet-display');
+  const snippetsDone = document.getElementById('snippets-done');
+  const bestDisplay = document.getElementById('best-display');
+  const resultWpm = document.getElementById('result-wpm');
+  const resultAcc = document.getElementById('result-acc');
+  const resultChars = document.getElementById('result-chars');
+  const resultSnippets = document.getElementById('result-snippets');
+  const newBestMsg = document.getElementById('new-best-msg');
+
+  // State
+  let state = 'start'; // start | playing | results
+  let queue = [];
+  let queueIdx = 0;
+  let charIdx = 0;
+  let correctChars = 0;
+  let totalKeystrokes = 0;
+  let snippetsCompleted = 0;
+  let timeLeft = GAME_DURATION;
+  let timerInterval = null;
+  let wpmInterval = null;
+  let startTime = 0;
+
+  function getBest() {
+    return parseInt(localStorage.getItem('typesprint-best') || '0', 10);
+  }
+  function setBest(val) {
+    localStorage.setItem('typesprint-best', val);
+  }
+
+  function showScreen(name) {
+    startScreen.classList.toggle('hidden', name !== 'start');
+    gameScreen.classList.toggle('hidden', name !== 'playing');
+    resultsScreen.classList.toggle('hidden', name !== 'results');
+    statsRow.classList.toggle('visible', name === 'playing');
+    timerFill.style.transform = name === 'playing' ? '' : 'scaleX(1)';
+  }
+
+  function updateBestDisplay() {
+    const best = getBest();
+    if (best > 0) {
+      bestDisplay.innerHTML = 'Best: <span>' + best + ' WPM</span>';
+    } else {
+      bestDisplay.textContent = '';
+    }
+  }
+
+  function buildQueue() {
+    queue = shuffle(snippets.slice());
+    queueIdx = 0;
+  }
+
+  function currentSnippet() {
+    if (queueIdx >= queue.length) {
+      // Reshuffle if exhausted
+      queue = shuffle(snippets.slice());
+      queueIdx = 0;
+    }
+    return queue[queueIdx];
+  }
+
+  function renderSnippet() {
+    const snip = currentSnippet();
+    categoryTag.textContent = snip.cat;
+    snippetDisplay.innerHTML = '';
+    for (let i = 0; i < snip.text.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'char' + (i === 0 ? ' current' : ' untyped');
+      span.textContent = snip.text[i];
+      snippetDisplay.appendChild(span);
+    }
+    charIdx = 0;
+  }
+
+  function calcWPM() {
+    const elapsed = (Date.now() - startTime) / 1000;
+    if (elapsed < 1) return 0;
+    return Math.round((correctChars / 5) / (elapsed / 60));
+  }
+
+  function calcAccuracy() {
+    if (totalKeystrokes === 0) return 100;
+    return Math.round((correctChars / totalKeystrokes) * 100);
+  }
+
+  function updateStats() {
+    wpmDisplay.textContent = calcWPM();
+    const acc = calcAccuracy();
+    accDisplay.textContent = acc + '%';
+    charsDisplay.textContent = correctChars;
+  }
+
+  function updateTimer() {
+    timeLeft--;
+    timerDisplay.textContent = timeLeft;
+    const pct = timeLeft / GAME_DURATION;
+    timerFill.style.transform = 'scaleX(' + pct + ')';
+
+    if (timeLeft <= 10) {
+      timerDisplay.classList.add('timer-warn');
+      timerDisplay.classList.remove('timer-val');
+    }
+
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }
+
+  function startGame() {
+    state = 'playing';
+    correctChars = 0;
+    totalKeystrokes = 0;
+    snippetsCompleted = 0;
+    timeLeft = GAME_DURATION;
+    charIdx = 0;
+
+    timerDisplay.textContent = GAME_DURATION;
+    timerDisplay.classList.add('timer-val');
+    timerDisplay.classList.remove('timer-warn');
+    timerFill.style.transform = 'scaleX(1)';
+    snippetsDone.textContent = 'Snippets completed: 0';
+
+    buildQueue();
+    renderSnippet();
+    showScreen('playing');
+
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+    wpmInterval = setInterval(updateStats, 500);
+    updateStats();
+  }
+
+  function endGame() {
+    state = 'results';
+    clearInterval(timerInterval);
+    clearInterval(wpmInterval);
+
+    const finalWpm = calcWPM();
+    const finalAcc = calcAccuracy();
+    const best = getBest();
+    const isNewBest = finalWpm > best;
+
+    if (isNewBest) setBest(finalWpm);
+
+    resultWpm.textContent = finalWpm;
+    resultAcc.textContent = finalAcc + '%';
+    resultChars.textContent = correctChars;
+    resultSnippets.textContent = snippetsCompleted;
+    newBestMsg.classList.toggle('show', isNewBest);
+
+    showScreen('results');
+  }
+
+  function advanceChar() {
+    const chars = snippetDisplay.querySelectorAll('.char');
+    const snip = currentSnippet();
+
+    if (charIdx >= snip.text.length) {
+      // Snippet complete
+      snippetsCompleted++;
+      snippetsDone.textContent = 'Snippets completed: ' + snippetsCompleted;
+      queueIdx++;
+      renderSnippet();
+      return;
+    }
+
+    // Update visual classes
+    for (let i = 0; i < chars.length; i++) {
+      chars[i].classList.remove('current');
+      if (i < charIdx) {
+        // already handled
+      } else if (i === charIdx) {
+        chars[i].classList.add('current');
+        chars[i].classList.remove('untyped');
+      }
+    }
+  }
+
+  // Input handler
+  document.addEventListener('keydown', function(e) {
+    // Prevent default for game-relevant keys during play
+    if (state === 'start') {
+      if (e.key === 'Tab' || e.key === 'Escape') return;
+      e.preventDefault();
+      startGame();
+      return;
+    }
+
+    if (state === 'results') {
+      if (e.key === ' ') {
+        e.preventDefault();
+        updateBestDisplay();
+        showScreen('start');
+        state = 'start';
+        // Quick restart: press space again triggers start via any key
+        setTimeout(function() { state = 'start'; }, 50);
+      }
+      return;
+    }
+
+    if (state !== 'playing') return;
+
+    // Ignore modifier-only keys and non-character keys
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab', 'Escape',
+         'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+         'Home', 'End', 'PageUp', 'PageDown', 'Insert', 'Delete',
+         'F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12',
+         'Enter'].includes(e.key)) {
+      e.preventDefault();
+      return;
+    }
+
+    // Backspace: go back one character
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      if (charIdx > 0) {
+        const chars = snippetDisplay.querySelectorAll('.char');
+        chars[charIdx].classList.remove('current', 'wrong');
+        chars[charIdx].classList.add('untyped');
+        charIdx--;
+        chars[charIdx].classList.remove('correct', 'wrong');
+        chars[charIdx].classList.add('current');
+      }
+      return;
+    }
+
+    e.preventDefault();
+
+    const snip = currentSnippet();
+    const chars = snippetDisplay.querySelectorAll('.char');
+    const expected = snip.text[charIdx];
+    const typed = e.key;
+
+    totalKeystrokes++;
+
+    if (typed === expected) {
+      // Correct
+      correctChars++;
+      chars[charIdx].classList.remove('current', 'wrong', 'untyped');
+      chars[charIdx].classList.add('correct');
+      charIdx++;
+
+      if (charIdx >= snip.text.length) {
+        // Snippet complete
+        snippetsCompleted++;
+        snippetsDone.textContent = 'Snippets completed: ' + snippetsCompleted;
+        queueIdx++;
+        renderSnippet();
+      } else {
+        chars[charIdx].classList.remove('untyped');
+        chars[charIdx].classList.add('current');
+      }
+    } else {
+      // Wrong - mark red, don't advance
+      chars[charIdx].classList.add('wrong');
+      chars[charIdx].classList.remove('current');
+      // Re-add current after a brief moment to keep cursor visible
+      requestAnimationFrame(function() {
+        chars[charIdx].classList.add('current');
+      });
+    }
+
+    updateStats();
+  });
+
+  // Init
+  updateBestDisplay();
+  showScreen('start');
+})();
+</script>
+
+<script src="view-switcher.js"></script>
+
+</body>
+</html>

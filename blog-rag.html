@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why I Stopped Using RAG and Started Building Agents — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="How moving from RAG to agentic architectures improved supply chain predictions by 35% in a $400M+ enterprise.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/rag-to-agents">
+<meta property="og:title" content="Why I Stopped Using RAG and Started Building Agents">
+<meta property="og:description" content="How moving from RAG to agentic architectures improved supply chain predictions by 35% in a $400M+ enterprise.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+
+  <div class="blog-meta">
+    <span>Oct 2025</span>
+    <span class="blog-meta-tag">Agents</span>
+    <span class="blog-meta-tag">RAG</span>
+    <span class="blog-meta-tag">Production AI</span>
+    <span>~6 min read</span>
+  </div>
+
+  <h1>Why I Stopped Using RAG and Started Building Agents</h1>
+
+  <p>In early 2023, Retrieval-Augmented Generation felt like the answer to everything. Your model doesn't know about your internal docs? RAG. Your chatbot hallucinates? RAG. Your enterprise wants AI but has proprietary data? RAG. I was a believer. I built RAG pipelines for supply chain operations at a $400M+ enterprise, and for a while, they worked well enough.</p>
+
+  <p>Then they didn't.</p>
+
+  <p>The problem wasn't that RAG stopped working. It was that the real bottleneck was never "the model doesn't know enough." It was "the model can't act on what it knows." That realization changed everything about how I build AI systems.</p>
+
+  <h2>The Promise of RAG</h2>
+
+  <p>RAG is elegant in its simplicity. You take a user query, embed it into a vector, search a knowledge base for semantically similar documents, inject those documents into the prompt, and let the LLM generate a grounded answer. No fine-tuning required. Your data stays private. The model stays current.</p>
+
+  <p>For our supply chain team, this meant analysts could ask natural language questions about inventory levels, supplier contracts, and demand forecasts. Instead of digging through dashboards and spreadsheets, they typed a question and got an answer backed by real data. Adoption was strong. The team loved it.</p>
+
+  <pre># Classic RAG pipeline
+def rag_query(question: str) -> str:
+    # 1. Embed the question
+    embedding = embed(question)
+
+    # 2. Retrieve relevant documents
+    docs = vector_store.similarity_search(embedding, k=5)
+
+    # 3. Stuff into prompt
+    context = "\n".join([d.content for d in docs])
+    prompt = f"Context:\n{context}\n\nQuestion: {question}"
+
+    # 4. Generate answer
+    return llm.generate(prompt)</pre>
+
+  <p>Clean. Predictable. Easy to debug. But also fundamentally limited.</p>
+
+  <h2>The Breaking Point</h2>
+
+  <p>The cracks appeared when stakeholders started asking questions that required more than retrieval. Not "What were last quarter's stockout rates?" but "Why are we seeing stockouts in the Southeast region, and what should we do about it?"</p>
+
+  <p>That second question requires the system to pull data from multiple sources, run comparisons across time periods, identify anomalies, cross-reference supplier lead times with demand patterns, and synthesize an actionable recommendation. RAG gives you a static snapshot. What the business needed was a reasoning process.</p>
+
+  <p>We tried the usual fixes. We built more sophisticated retrieval: hybrid search, re-ranking, query decomposition. We chunked documents differently. We added metadata filters. Each improvement bought us another month, but the fundamental problem remained: <strong>RAG is a lookup pattern, not a reasoning pattern.</strong></p>
+
+  <p>The final straw was a stockout prediction task. We had all the relevant data in our vector store. The model could retrieve it. But it couldn't coordinate the multi-step analysis needed to turn that data into a prediction. We were asking a librarian to be a strategist.</p>
+
+  <h2>The Agentic Alternative</h2>
+
+  <p>The shift was conceptual before it was technical. Instead of asking "How do we get better documents into the prompt?", I started asking "How do we give the model the ability to reason and act across multiple steps?"</p>
+
+  <p>That led me to agentic architectures. Specifically, a pattern I call <strong>Planner-Worker-Judge</strong>:</p>
+
+  <ul>
+    <li><strong>Planner</strong> -- Receives the objective, breaks it into a sequence of subtasks, assigns resources, and defines success criteria.</li>
+    <li><strong>Workers</strong> -- Specialized agents that execute individual subtasks. One might query a database, another runs a statistical analysis, another pulls market data from an API.</li>
+    <li><strong>Judge</strong> -- Reviews the combined output, checks for consistency, validates against known constraints, and either approves the result or sends it back for revision.</li>
+  </ul>
+
+  <pre># Agentic architecture: Planner-Worker-Judge
+class SupplyChainAgent:
+    def analyze(self, objective: str) -> Report:
+        # Step 1: Planner decomposes the objective
+        plan = self.planner.decompose(objective)
+        # => [QueryInventory, AnalyzeTrends, CheckSuppliers, CrossReference]
+
+        # Step 2: Workers execute subtasks (parallel where possible)
+        results = {}
+        for task in plan.tasks:
+            worker = self.worker_pool.get(task.type)
+            results[task.id] = worker.execute(task, context=results)
+
+        # Step 3: Judge validates and synthesizes
+        report = self.judge.evaluate(
+            objective=objective,
+            plan=plan,
+            results=results,
+            constraints=self.business_rules
+        )
+
+        if report.needs_revision:
+            return self.analyze_with_feedback(objective, report.feedback)
+
+        return report</pre>
+
+  <p>The difference is structural. RAG says "here are some relevant documents, figure it out." An agent says "let me break this problem down, gather what I need, analyze it step by step, and validate my conclusions."</p>
+
+  <h2>Real Results</h2>
+
+  <p>We ran the Planner-Worker-Judge architecture against our stockout prediction problem. The same problem that RAG struggled with for months.</p>
+
+  <p>The Planner decomposed "predict stockout risk for Q4" into five subtasks: pull historical stockout data, analyze seasonal demand patterns, check current supplier lead times, cross-reference with active purchase orders, and compute risk scores by SKU category.</p>
+
+  <p>Each Worker executed independently, using the right tool for the job. One queried our ERP system directly. Another ran time-series analysis on demand data. A third pulled live supplier status from our procurement platform.</p>
+
+  <p>The Judge reviewed the combined analysis, flagged two inconsistencies in the data (a supplier had updated lead times that hadn't propagated to our main system), and produced a final report with confidence intervals.</p>
+
+  <p><strong>Stockout prediction accuracy improved by 35%.</strong> Not because we had better data -- we had the same data. But because the system could now reason across it instead of just retrieving it.</p>
+
+  <p>Beyond accuracy, the agentic approach gave us something RAG never could: <strong>transparency</strong>. Every step in the chain was logged. When a prediction was wrong, we could trace exactly where the reasoning broke down. Was it bad data? A flawed decomposition? A Worker using the wrong methodology? The Judge missing a constraint? Each failure mode had a clear fix.</p>
+
+  <h2>When RAG Still Makes Sense</h2>
+
+  <p>I haven't abandoned RAG entirely. It remains the right tool for specific use cases:</p>
+
+  <ul>
+    <li><strong>Knowledge Q&A</strong> -- When users genuinely need factual lookup against a document corpus, RAG is fast, cheap, and reliable. Internal policy questions, product documentation, FAQ systems.</li>
+    <li><strong>Grounding layer within agents</strong> -- Several of our Worker agents use RAG internally as one of their tools. The agent decides when retrieval is the right action, rather than retrieval being the only action.</li>
+    <li><strong>Low-stakes, high-volume queries</strong> -- If the cost of a wrong answer is low and you need to handle thousands of queries per minute, RAG's simplicity is a feature.</li>
+  </ul>
+
+  <p>The key insight is that <strong>RAG is a tool, not an architecture</strong>. When I was building RAG pipelines, I was confusing the tool for the system. The moment I started thinking in terms of agent architectures that could use RAG as one capability among many, everything clicked.</p>
+
+  <div class="blog-divider"></div>
+
+  <h2>The Takeaway</h2>
+
+  <p>If your AI system needs to answer questions, use RAG. If your AI system needs to solve problems, build agents. The distinction matters because it shapes every decision downstream: how you structure your data, how you evaluate performance, how you debug failures, and how you communicate capabilities to stakeholders.</p>
+
+  <p>The enterprise doesn't need a smarter search engine. It needs systems that can reason, plan, act, and learn. That's what agents give you. RAG was the first chapter. Agents are the rest of the book.</p>
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

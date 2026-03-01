@@ -2,6 +2,20 @@
   "rewrites": [
     { "source": "/terminal", "destination": "/concept-terminal.html" },
     { "source": "/neural", "destination": "/concept-neural.html" },
-    { "source": "/dashboard", "destination": "/concept-dashboard.html" }
+    { "source": "/dashboard", "destination": "/concept-dashboard.html" },
+    { "source": "/games", "destination": "/games.html" },
+    { "source": "/codebreaker", "destination": "/game-codebreaker.html" },
+    { "source": "/pipeline", "destination": "/game-pipeline.html" },
+    { "source": "/stack", "destination": "/game-stack.html" },
+    { "source": "/typesprint", "destination": "/game-typing.html" },
+    { "source": "/blog/alfred", "destination": "/blog-alfred.html" },
+    { "source": "/blog/openclaw", "destination": "/blog-openclaw.html" },
+    { "source": "/blog/clawdbot", "destination": "/blog-clawdbot.html" },
+    { "source": "/blog/rag", "destination": "/blog-rag.html" },
+    { "source": "/blog/mcp", "destination": "/blog-mcp.html" },
+    { "source": "/blog/multiagent", "destination": "/blog-multiagent.html" },
+    { "source": "/blog/localllms", "destination": "/blog-localllms.html" },
+    { "source": "/blog/llmcouncil", "destination": "/blog-llmcouncil.html" },
+    { "source": "/blog/supplychain", "destination": "/blog-supplychain.html" }
   ]
 }

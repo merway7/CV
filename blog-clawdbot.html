@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clawdbot: My First Experiment With Messaging-First AI Agents — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="How I set up Clawdbot as an autonomous AI agent in Signal, extended it with supply chain analytics, and discovered what enterprise AI should actually feel like.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/clawdbot">
+<meta property="og:title" content="Clawdbot: My First Experiment With Messaging-First AI Agents">
+<meta property="og:description" content="How I set up Clawdbot as an autonomous AI agent in Signal, extended it with supply chain analytics, and discovered what enterprise AI should actually feel like.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+  <div class="blog-meta">
+    <span>Nov 2025</span>
+    <span class="blog-meta-tag">Clawdbot</span>
+    <span class="blog-meta-tag">Docker</span>
+    <span class="blog-meta-tag">Messaging AI</span>
+    <span>5 min read</span>
+  </div>
+  <h1>Clawdbot: My First Experiment With Messaging-First AI Agents</h1>
+
+  <p>When Peter Steinberger dropped Clawdbot as open source, I had a running instance within hours. Not days, not a weekend project &mdash; hours. A Docker container, a Claude API key, and suddenly I had a fully autonomous agent living in my Signal chats. That speed from zero to functional is the story here, and it says everything about where AI interfaces are heading.</p>
+
+  <h2>The Discovery</h2>
+
+  <p>I found Clawdbot through a Mastodon thread where Steinberger casually mentioned he'd open-sourced the agent he'd been using personally. The pitch was disarmingly simple: run a Docker container, give it a Claude API key, connect it to Signal, and you have an AI agent in your messaging app. No web UI. No app to install. No new interface to learn.</p>
+
+  <p>I've been building AI systems for long enough to know that simplicity in the pitch usually means complexity under the hood. But Clawdbot genuinely delivered. The architecture is clean, the setup is straightforward, and the result is something that feels less like a tech demo and more like a permanent addition to how I work.</p>
+
+  <h2>The Setup</h2>
+
+  <p>The entire deployment fits in a single <code>docker-compose.yml</code>:</p>
+
+<pre>
+# docker-compose.yml
+version: "3.8"
+services:
+  clawdbot:
+    image: ghcr.io/steipete/clawdbot:latest
+    container_name: clawdbot
+    restart: unless-stopped
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SIGNAL_PHONE_NUMBER=+33XXXXXXXXX
+      - ALLOWED_NUMBERS=+33XXXXXXXXX,+49XXXXXXXXX
+      - MODEL=claude-sonnet-4-5-20250514
+      - MAX_TOKENS=4096
+      - SYSTEM_PROMPT_FILE=/config/system-prompt.txt
+    volumes:
+      - ./config:/config
+      - ./data:/data
+      - signal-data:/signal
+    ports:
+      - "8080:8080"
+
+  signal-cli:
+    image: bbernhard/signal-cli-rest-api:latest
+    container_name: signal-cli
+    restart: unless-stopped
+    volumes:
+      - signal-data:/home/.local/share/signal-cli
+
+volumes:
+  signal-data:
+</pre>
+
+  <p>Two containers. One for the agent, one for the Signal bridge. The <code>ALLOWED_NUMBERS</code> variable is the access control &mdash; only listed phone numbers can interact with the agent. Simple, effective, and no OAuth flow to debug at 11 PM on a Sunday.</p>
+
+  <p>The initial setup took about 20 minutes, most of which was linking the Signal account (you need to register a phone number). After that, I sent my first message: "What's the weather in Berlin?" The response came back in 2 seconds. The agent was alive.</p>
+
+  <h2>The Architecture</h2>
+
+  <p>What makes Clawdbot interesting isn't the AI &mdash; it's the architecture pattern. The messaging app becomes the universal interface. The agent sits behind it as a processing layer. And because it's containerized, you can extend it without touching the core.</p>
+
+  <p>The flow is straightforward:</p>
+
+  <ol>
+    <li>User sends a Signal message</li>
+    <li>The Signal CLI bridge picks it up and forwards it to the Clawdbot container via REST API</li>
+    <li>Clawdbot constructs a prompt with the system prompt, conversation history, and available tools</li>
+    <li>Claude processes the request, potentially making tool calls</li>
+    <li>The response is sent back through Signal</li>
+  </ol>
+
+  <p>The tool system is where the real power lives. Out of the box, Clawdbot can run shell commands, search the web, read files, and manage basic tasks. But because the tool interface is just a JSON schema, adding custom tools is trivial.</p>
+
+  <h2>Extending It: Flair Analytics Integration</h2>
+
+  <p>This is where the experiment got genuinely useful. I'd been building analytics dashboards for supply chain KPIs at work using Flair. The dashboards are great for deep analysis, but sometimes you just need a number. "What's the stockout rate for Q4?" shouldn't require opening a laptop, navigating to a dashboard, and applying filters.</p>
+
+  <p>I wrote a custom tool that connects Clawdbot to our Flair analytics API:</p>
+
+<pre>
+# tools/flair_analytics.py
+import httpx
+from datetime import datetime
+
+TOOL_SCHEMA = {
+    "name": "query_supply_chain",
+    "description": "Query supply chain KPIs from Flair analytics",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "metric": {
+                "type": "string",
+                "enum": ["stockout_rate", "fill_rate", "otif",
+                         "inventory_turns", "lead_time", "forecast_accuracy"]
+            },
+            "period": {
+                "type": "string",
+                "description": "Time period, e.g. 'Q4 2025', 'last 30 days'"
+            },
+            "region": {
+                "type": "string",
+                "description": "Optional region filter"
+            }
+        },
+        "required": ["metric"]
+    }
+}
+
+async def execute(params):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            "https://api.internal.flair.co/v1/kpi",
+            params={
+                "metric": params["metric"],
+                "period": params.get("period", "current_quarter"),
+                "region": params.get("region", "all")
+            },
+            headers={"Authorization": f"Bearer {FLAIR_API_KEY}"}
+        )
+        data = response.json()
+        return format_kpi_response(data)
+</pre>
+
+  <p>After dropping this into the tools directory and restarting the container, I could text my agent: "What's the stockout rate for Q4?" and get an answer in 3 seconds. Not 3 minutes of dashboard navigation. Three seconds via text message.</p>
+
+  <p>I extended this further with tools for:</p>
+
+  <ul>
+    <li><strong>Forecast accuracy comparisons</strong> &mdash; "How did our Q4 forecast compare to actuals?"</li>
+    <li><strong>Inventory alerts</strong> &mdash; the agent proactively messages me when a SKU drops below safety stock</li>
+    <li><strong>Supplier performance</strong> &mdash; "What's the OTIF rate for supplier X this month?"</li>
+    <li><strong>Quick reports</strong> &mdash; "Give me a summary of last week's supply chain performance"</li>
+  </ul>
+
+  <p>Each of these would normally require opening a specific dashboard, applying the right filters, and interpreting the visualization. Through Clawdbot, it's a text message and a 3-second wait.</p>
+
+  <h2>What Enterprise AI Should Feel Like</h2>
+
+  <p>Here's what bothers me about most enterprise AI deployments: they add complexity. New dashboards. New portals. New login flows. Training sessions. Change management programs. The irony is that AI is supposed to reduce friction, but the delivery mechanism creates more of it.</p>
+
+  <p>Clawdbot showed me what the alternative looks like. The interface is something everyone already knows &mdash; a messaging app. The interaction model is something everyone already does &mdash; typing a question. The response format is something everyone already reads &mdash; a text message. There is no friction to add because you're using infrastructure that's already there.</p>
+
+  <blockquote>The best interface is the one you don't have to think about. For most people, that's the messaging app they check 100 times a day.</blockquote>
+
+  <p>When I showed the Flair integration to a colleague, their first reaction wasn't "that's cool AI." It was "why doesn't everything work like this?" That reaction &mdash; not impressed by the technology, but frustrated that other tools are harder to use &mdash; is the signal that you've found the right interface.</p>
+
+  <h2>Limitations and Honest Takeaways</h2>
+
+  <p><strong>Signal is great for privacy but limited for rich interactions.</strong> No buttons, no inline images, no structured responses. Everything is plain text. For KPI queries this is fine, but for anything requiring visual data, you hit a wall fast.</p>
+
+  <p><strong>Cost adds up.</strong> Every message is an API call. If the agent is chatty or the queries require long context, your Anthropic bill grows. I set up a token budget per conversation to keep it in check.</p>
+
+  <p><strong>Memory across conversations is manual.</strong> Out of the box, Clawdbot doesn't persist memory between conversations. I added a simple SQLite layer to store key facts and preferences, which dramatically improved the experience. This is something OpenClaw later solved more elegantly.</p>
+
+  <p><strong>Security requires thought.</strong> An agent that can run shell commands and query your analytics API from a phone number is powerful, but it's also an attack surface. The <code>ALLOWED_NUMBERS</code> list is the minimum viable security. For production use, you'd want rate limiting, command allowlists, and audit logging.</p>
+
+  <div class="blog-divider"></div>
+
+  <p>Clawdbot was my gateway drug to messaging-first AI agents. What started as a weekend experiment became a daily tool that changed how I think about interfaces, enterprise software, and the gap between what AI can do and how we let people access it.</p>
+
+  <p>The technology isn't the bottleneck. The interface is. And messaging apps are the interface that's already everywhere, already understood, and already trusted. If you're building AI for end users &mdash; not developers, not data scientists, but the people who actually need answers &mdash; start here.</p>
+
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

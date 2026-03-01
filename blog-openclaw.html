@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw, Claude Code, and the Future of AI Agents as Interfaces — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="OpenClaw represents a paradigm shift in AI interfaces. The terminal is for builders, messaging apps are for everyone else, and the future is a swarm of agents everywhere.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/openclaw">
+<meta property="og:title" content="OpenClaw, Claude Code, and the Future of AI Agents as Interfaces">
+<meta property="og:description" content="OpenClaw represents a paradigm shift in AI interfaces. The terminal is for builders, messaging apps are for everyone else, and the future is a swarm of agents everywhere.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+  <div class="blog-meta">
+    <span>Jan 2026</span>
+    <span class="blog-meta-tag">OpenClaw</span>
+    <span class="blog-meta-tag">Claude Code</span>
+    <span class="blog-meta-tag">Agent UX</span>
+    <span>7 min read</span>
+  </div>
+  <h1>OpenClaw, Claude Code, and the Future of AI Agents as Interfaces</h1>
+
+  <p>OpenClaw going viral in January was the moment I'd been waiting for. Not because it introduced a fundamentally new capability &mdash; we've had LLM-powered agents for a while now &mdash; but because it proved something I'd been arguing to anyone who'd listen: <strong>the interface layer is the real battleground for AI adoption, and messaging apps already won.</strong></p>
+
+  <p>An open-source agent that lives in your messaging apps, connects to any LLM backend, and has a community registry of 5,000+ skills? That's not a chatbot. That's a new computing paradigm. And it forced me to rethink everything I assumed about how humans and AI agents should interact.</p>
+
+  <h2>What OpenClaw Actually Is</h2>
+
+  <p>At its core, OpenClaw is a bridge. It sits between messaging platforms (Signal, WhatsApp, Telegram, Discord) and LLM providers (Anthropic, OpenAI, local models via Ollama). You install it, point it at your preferred model, connect it to your messaging app, and suddenly you have an autonomous agent that can do... well, almost anything.</p>
+
+  <p>The skill registry is what makes it interesting. Instead of building every capability from scratch, OpenClaw uses a modular skill system. Community-contributed skills cover everything from web search and code execution to calendar management and home automation. You browse the registry, install what you need, and your agent gains new capabilities instantly.</p>
+
+<pre>
+# openclaw.yaml - Agent configuration
+agent:
+  name: "merwan-agent"
+  model:
+    provider: anthropic
+    model: claude-sonnet-4-5-20250514
+    max_tokens: 4096
+
+interface:
+  platform: signal
+  phone_number: "+33XXXXXXXXX"
+  allowed_contacts: ["*"]  # or specific numbers
+
+skills:
+  installed:
+    - web-search@2.1.0
+    - calendar-sync@1.4.2
+    - code-runner@3.0.1
+    - flair-analytics@1.0.0    # custom skill
+    - email-manager@2.2.0
+    - home-assistant@1.1.0
+
+memory:
+  enabled: true
+  backend: local-sqlite
+  auto_summarize: true
+</pre>
+
+  <p>The config above is roughly what my setup looks like. Simple, declarative, and the agent handles the rest. When someone sends me a message asking about a supply chain metric, the agent routes to the <code>flair-analytics</code> skill, queries the database, formats the response, and sends it back &mdash; all within my Signal chat.</p>
+
+  <h2>The Paradigm Shift: Two Interfaces, Two Audiences</h2>
+
+  <p>Here's the insight that crystallized for me after running both Claude Code and OpenClaw side by side for two months: <strong>they serve fundamentally different cognitive modes.</strong></p>
+
+  <p>Claude Code is a terminal-native agent. It lives in your IDE or terminal, has deep filesystem access, understands code at a structural level, and communicates through the patterns developers already know. It's extraordinary for building, debugging, and engineering work. But it requires a certain fluency. You need to think in terms of files, diffs, and shell commands.</p>
+
+  <p>OpenClaw takes the opposite approach. It meets people where they already are &mdash; in their messaging apps. No new interface to learn. No terminal to open. No mental model to adopt. You text it like you'd text a colleague, and it responds in kind. The barrier to entry isn't zero; it's negative. People are already conditioned to communicate through messaging. The agent just becomes another contact in their list.</p>
+
+  <p>This isn't a competition between the two. It's a spectrum:</p>
+
+  <ul>
+    <li><strong>Terminal agents (Claude Code)</strong> &mdash; for builders. High control, high capability, high learning curve.</li>
+    <li><strong>Chat agents (OpenClaw)</strong> &mdash; for everyone else. Natural language in, natural language out. The interface disappears.</li>
+    <li><strong>Voice agents</strong> &mdash; the next frontier. Even lower friction. I'm already experimenting with this for Alfred.</li>
+  </ul>
+
+  <p>The question isn't which interface wins. They all win. The question is which interface fits which context.</p>
+
+  <h2>Agent Placement Strategy: Where Should They Live?</h2>
+
+  <p>This is where it gets strategic. Once you accept that agents are interfaces, not applications, the next question is: where do you deploy them?</p>
+
+  <p>I've been running an experiment with what I call an "agent mesh" &mdash; multiple specialized agents deployed across different touchpoints:</p>
+
+  <ul>
+    <li><strong>IDE agent (Claude Code)</strong> &mdash; handles all code-related tasks. Reviews PRs, writes tests, debugs issues, refactors code.</li>
+    <li><strong>Messaging agent (OpenClaw/Clawdbot)</strong> &mdash; handles ad-hoc queries, KPI lookups, quick decisions. Available 24/7 from my phone.</li>
+    <li><strong>Personal agent (Alfred)</strong> &mdash; handles email, calendar, travel, personal workflows. Runs persistently in the background.</li>
+    <li><strong>Team agent</strong> &mdash; lives in Slack, handles team coordination, meeting summaries, action item tracking.</li>
+  </ul>
+
+  <p>Each agent has its own context, tools, and permissions. But they share a common memory layer so context flows between them. If I discuss a project in Slack, my IDE agent knows about it. If Alfred books a flight, my messaging agent can answer questions about it.</p>
+
+<pre>
+# Shared memory configuration across agents
+memory:
+  shared_store:
+    backend: postgres
+    host: localhost:5432
+    database: agent_memory
+
+  sync:
+    agents: ["alfred", "openclaw", "claude-code", "slack-bot"]
+    conflict_resolution: latest_write
+    sync_interval: 30s
+
+  namespaces:
+    - personal    # Alfred owns, others read
+    - work        # All agents read/write
+    - code        # Claude Code owns, others read
+    - analytics   # OpenClaw owns, others read
+</pre>
+
+  <h2>What I Learned Running Clawdbot Since November</h2>
+
+  <p>I've been running my own Clawdbot instance &mdash; the predecessor to OpenClaw &mdash; since Peter Steinberger released it in November 2025. Two months of daily use taught me things that no amount of theorizing could.</p>
+
+  <p><strong>Latency matters more than capability.</strong> My Clawdbot instance can do complex multi-step reasoning, but the queries people actually send it are simple: "What's the current stockout rate?" "Summarize this article." "Remind me to call Sarah at 3." If the answer takes more than 5 seconds, people lose trust. I optimized for speed over sophistication and satisfaction went up.</p>
+
+  <p><strong>Context persistence transforms the experience.</strong> The first week, every conversation started from zero. After enabling persistent memory, the agent remembered previous conversations, preferences, and context. "Check the same metric as last time" became a valid command. This is when it stopped feeling like a tool and started feeling like a colleague.</p>
+
+  <p><strong>Skills need curation, not quantity.</strong> The OpenClaw registry has 5,000+ skills, but I use about 15 regularly. The temptation is to install everything. The reality is that a focused, well-tested skill set beats a bloated one. Every additional skill is a potential failure mode.</p>
+
+  <h2>Where This Is Heading</h2>
+
+  <p>I think we're about 18 months away from a world where most knowledge workers interact with AI agents primarily through messaging apps, not dedicated AI interfaces. The reasons are structural:</p>
+
+  <ul>
+    <li><strong>Messaging apps have distribution.</strong> WhatsApp has 2 billion users. You don't need to convince anyone to install a new app.</li>
+    <li><strong>The interaction model is proven.</strong> Humans have been texting for 30 years. The cognitive overhead is zero.</li>
+    <li><strong>Agents need ambient presence.</strong> An agent you have to deliberately open is an agent you'll forget to use. One that lives in your most-used app is always available.</li>
+  </ul>
+
+  <p>The real question isn't "which agent is best" &mdash; it's "how many agents do you need, and where should they live?"</p>
+
+  <p>My answer: everywhere. An agent in your IDE, one in your WhatsApp, one managing your supply chain, one coordinating your team. The operating system of the future isn't macOS or Linux. It's a swarm of specialized agents, each deployed at the point of maximum leverage, all sharing context and working toward your goals.</p>
+
+  <div class="blog-divider"></div>
+
+  <p>OpenClaw made this vision tangible for the first time. Not because the technology is new, but because the packaging is right. An open-source agent that anyone can deploy in 5 minutes, in the app they already use, with a community building skills for every use case imaginable.</p>
+
+  <p>The terminal is for builders. The chat app is for everyone else. And the future belongs to whoever figures out how to make these agents work together.</p>
+
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Built Alfred: A Fully Autonomous AI Agent That Runs My Life — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="How I built Alfred, a fully autonomous personal AI agent with memory, tool access, and anticipatory workflows that manages my daily life end-to-end.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/alfred">
+<meta property="og:title" content="I Built Alfred: A Fully Autonomous AI Agent That Runs My Life">
+<meta property="og:description" content="How I built Alfred, a fully autonomous personal AI agent with memory, tool access, and anticipatory workflows that manages my daily life end-to-end.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+  <div class="blog-meta">
+    <span>Feb 2026</span>
+    <span class="blog-meta-tag">Alfred</span>
+    <span class="blog-meta-tag">Personal AI</span>
+    <span class="blog-meta-tag">Automation</span>
+    <span>6 min read</span>
+  </div>
+  <h1>I Built Alfred: A Fully Autonomous AI Agent That Runs My Life</h1>
+
+  <p>After months of building agentic systems for enterprises &mdash; orchestrating multi-model pipelines, wiring up tool chains, debugging context windows at 2 a.m. &mdash; I had an uncomfortable realization. The cobbler's children had no shoes. I was building autonomous agents for other people's workflows while manually triaging my own inbox every morning like it was 2019.</p>
+
+  <p>So I built Alfred. Not as a side project or a weekend hack, but as a genuine attempt to answer a question I couldn't stop thinking about: <strong>what happens when you treat personal automation with the same rigor you'd bring to an enterprise system?</strong></p>
+
+  <h2>The Motivation: Beyond "Hey Siri"</h2>
+
+  <p>Every AI assistant I've used falls into the same trap. They're reactive. You ask, they answer. You command, they execute. But that's not how a real colleague works. A real colleague notices patterns, anticipates needs, and takes initiative without being asked.</p>
+
+  <p>I wanted an agent that could observe my day unfolding and make decisions on my behalf. Not just "set a timer for 20 minutes" but "I see you have a flight on Thursday, the airline just sent a gate change to your email, and your calendar still shows the old departure time &mdash; I've updated it and texted your pickup that you'll land 40 minutes later."</p>
+
+  <p>That's the gap. And it's enormous.</p>
+
+  <h2>Architecture: A Persistent Agent With Memory</h2>
+
+  <p>Alfred runs as a persistent process, not a stateless request-response loop. This is the single most important architectural decision. Without persistence, you can't have anticipation. Without memory, you can't have context. And without context, you're just building a fancy autocomplete.</p>
+
+  <p>The core loop is simple:</p>
+
+  <ol>
+    <li><strong>Observe</strong> &mdash; poll event sources (email, calendar, Slack, webhooks) on a configurable schedule</li>
+    <li><strong>Reason</strong> &mdash; classify events, match against known patterns, check memory for relevant history</li>
+    <li><strong>Act</strong> &mdash; execute tool calls (send email, update calendar, trigger workflows)</li>
+    <li><strong>Learn</strong> &mdash; store outcomes and feedback for future decisions</li>
+  </ol>
+
+  <p>Here's a simplified version of the agent configuration:</p>
+
+<pre>
+# alfred.config.yaml
+agent:
+  name: alfred
+  model: claude-sonnet-4-5-20250514
+  persistence: true
+  memory:
+    backend: sqlite
+    path: ~/.alfred/memory.db
+    retention_days: 90
+
+sources:
+  - type: gmail
+    poll_interval: 60s
+    filters: ["is:unread", "-category:promotions"]
+  - type: google_calendar
+    poll_interval: 300s
+  - type: slack
+    channels: ["#alerts", "#team-updates"]
+    dm: true
+
+tools:
+  - gmail.send
+  - gmail.draft
+  - calendar.create
+  - calendar.update
+  - slack.post
+  - web.search
+  - flights.search
+  - notion.update
+
+workflows:
+  - name: travel_prep
+    trigger: "calendar event with 'flight' or 'travel'"
+    steps:
+      - check_email_for_confirmations
+      - verify_calendar_accuracy
+      - research_destination_weather
+      - notify_relevant_contacts
+</pre>
+
+  <p>The memory layer is where things get interesting. Alfred doesn't just remember facts &mdash; it remembers <strong>patterns</strong>. It knows I book flights roughly every third Thursday. It knows that when I get a Slack message from my team lead about a deadline, I usually need to block two hours of focus time the next morning. These aren't hard-coded rules. They're learned behaviors from observing my responses over weeks.</p>
+
+  <h2>Specific Examples: Where It Clicks</h2>
+
+  <h3>Flight Booking</h3>
+
+  <p>Alfred noticed that I fly Paris to Berlin roughly every three weeks. After the third occurrence, it started pre-researching flight options two days before the pattern predicted I'd book. It drafts a summary &mdash; cheapest option, shortest layover, my preferred airline &mdash; and sends it to me as a morning briefing. I approve with a single word or tweak the parameters. Total time from need to booked flight: under 30 seconds.</p>
+
+  <h3>Slack + Calendar Blocking</h3>
+
+  <p>This one surprised me. Alfred picked up on a pattern I hadn't even consciously noticed: every time a specific Slack channel gets active about a deployment, I end up in a 90-minute firefight within two hours. Now, when it detects deployment chatter spiking, it proactively blocks a "buffer" slot on my calendar and sends me a heads-up: "Deployment activity detected in #releases. I've blocked 2-3:30 PM as buffer time. Want me to keep it?"</p>
+
+  <h3>Email Triage</h3>
+
+  <p>My inbox gets 80-120 emails a day. Alfred classifies them into four buckets: respond now, respond later, FYI, and ignore. It drafts responses for the "respond now" bucket using my writing style (trained on 6 months of sent emails). I review and send. What used to take 45 minutes each morning now takes 8.</p>
+
+  <h2>The Technical Stack</h2>
+
+  <p>Alfred runs on a small VPS. The core is a Python process using <code>asyncio</code> for concurrent event polling. The LLM layer uses Claude via the Anthropic API, with tool use for structured actions. Memory is SQLite with full-text search for retrieval. The workflow engine is a simple DAG executor &mdash; nothing fancy, because the LLM handles the complex reasoning and the workflows just need to be reliable.</p>
+
+  <p>Here's how a workflow definition looks in practice:</p>
+
+<pre>
+class TravelPrepWorkflow:
+    trigger = EventPattern(
+        source="calendar",
+        contains=["flight", "travel", "airport"],
+        lookahead_days=7
+    )
+
+    async def execute(self, event, memory, tools):
+        # Check email for booking confirmations
+        confirmations = await tools.gmail.search(
+            query=f"flight confirmation {event.destination}",
+            max_results=5
+        )
+
+        # Cross-reference with calendar
+        calendar_events = await tools.calendar.get_range(
+            start=event.start - timedelta(days=1),
+            end=event.end + timedelta(days=1)
+        )
+
+        # Build briefing
+        briefing = await self.agent.reason(
+            context={
+                "trip": event,
+                "confirmations": confirmations,
+                "calendar": calendar_events,
+                "memory": memory.get_travel_preferences()
+            },
+            task="Create a travel briefing with any conflicts or missing items"
+        )
+
+        await tools.slack.dm(user="merwan", message=briefing)
+</pre>
+
+  <h2>Lessons Learned</h2>
+
+  <p><strong>Start with observation, not action.</strong> I spent the first two weeks with Alfred in read-only mode. It could observe everything but couldn't act. This let me calibrate its judgment before giving it real power. When I finally enabled actions, the false positive rate was under 5%.</p>
+
+  <p><strong>Memory needs curation.</strong> Raw event logging isn't memory &mdash; it's a log file. The memory layer needs to extract patterns, generalize from specifics, and occasionally forget. I run a weekly "memory compaction" job that summarizes old entries and drops noise.</p>
+
+  <p><strong>Trust is earned incrementally.</strong> I didn't start by giving Alfred access to my email send button. I started with drafts. Then I let it send to specific contacts. Then broader. Each escalation was gated by a week of zero errors. Building trust with an autonomous agent follows the same curve as building trust with a new hire.</p>
+
+  <p><strong>The hardest part isn't the AI &mdash; it's the integrations.</strong> Getting Claude to reason about my schedule is trivial. Getting a reliable OAuth flow to Gmail that doesn't break every 30 days? That's where the real engineering is.</p>
+
+  <div class="blog-divider"></div>
+
+  <h2>What's Next</h2>
+
+  <p>Alfred is currently a single agent. The next step is making it a coordinator &mdash; a meta-agent that delegates to specialized sub-agents for different domains (travel, email, code review, health). I'm also experimenting with voice as the primary interface, using a local Whisper model for transcription so nothing leaves my machine.</p>
+
+  <p>We're past the "AI assistant" era. We're firmly in the "AI colleague" era. The question isn't whether you'll have a personal agent &mdash; it's whether you'll build one that actually understands how you work, or settle for one that just follows instructions.</p>
+
+  <p>I chose to build.</p>
+
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

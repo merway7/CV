@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The MCP Protocol Will Change How We Build AI Tools — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="How the Model Context Protocol bridges the gap between LLMs and tools, and how HiveBrain cut bug resolution time by 40%.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/mcp-protocol">
+<meta property="og:title" content="The MCP Protocol Will Change How We Build AI Tools">
+<meta property="og:description" content="How the Model Context Protocol bridges the gap between LLMs and tools, and how HiveBrain cut bug resolution time by 40%.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+
+  <div class="blog-meta">
+    <span>Dec 2024</span>
+    <span class="blog-meta-tag">MCP</span>
+    <span class="blog-meta-tag">Developer Tools</span>
+    <span class="blog-meta-tag">HiveBrain</span>
+    <span>~6 min read</span>
+  </div>
+
+  <h1>The MCP Protocol Will Change How We Build AI Tools</h1>
+
+  <p>Every AI coding session starts the same way. You open your assistant, describe a problem, watch it reason through a solution. Then you close the session and all that context evaporates. The next time you hit the same bug, you start from zero. The next developer on your team who encounters it? Also from zero.</p>
+
+  <p>AI assistants are islands. They have no memory across sessions, no way to share knowledge with other tools, and no standardized interface for connecting to external systems. The Model Context Protocol (MCP) changes that, and I think it will reshape how we build developer tools.</p>
+
+  <h2>The Problem: Isolated AI Sessions</h2>
+
+  <p>I noticed the pattern while working on a complex supply chain platform. Our team was using AI assistants heavily -- for debugging, code generation, architecture discussions. But every session was ephemeral. Monday's breakthrough debugging session was gone by Tuesday. The junior developer struggling with the same ORM quirk on Wednesday had no way to benefit from what the senior developer had already solved.</p>
+
+  <p>We tried the obvious solutions. Shared documents. Wiki pages. Slack channels dedicated to "AI learnings." None of them stuck. The friction was too high. You'd solve a problem, feel the dopamine hit, and move on. Writing it up for a wiki felt like homework.</p>
+
+  <p>What I wanted was something automatic. Solve a problem, and the solution enters a shared knowledge base that every future AI session can access. No manual documentation. No context switching. The knowledge just flows.</p>
+
+  <h2>What MCP Is</h2>
+
+  <p>The Model Context Protocol, introduced by Anthropic, is a standardized way for LLMs to interact with external tools and data sources. Think of it as HTTP for AI tool integration. Before HTTP, every networked application had its own protocol. After HTTP, the web exploded because everyone agreed on how to communicate.</p>
+
+  <p>MCP does the same thing for AI tools. Instead of building custom integrations for every LLM-tool pair, you build an MCP server once and any MCP-compatible client can use it. The protocol defines a clean interface: tools (functions the model can call), resources (data the model can read), and prompts (templates the model can use).</p>
+
+  <pre>// MCP server configuration in Claude Code
+// settings.json
+{
+  "mcpServers": {
+    "hivebrain": {
+      "command": "node",
+      "args": ["./mcp-server/index.js"],
+      "env": {
+        "HIVEBRAIN_PORT": "4321",
+        "HIVEBRAIN_DB": "./data/hivebrain.sqlite"
+      }
+    }
+  }
+}</pre>
+
+  <p>That's it. Once configured, the AI assistant gains access to whatever tools the MCP server exposes. No SDK integration. No API wrappers. The protocol handles serialization, error handling, and capability negotiation.</p>
+
+  <h2>HiveBrain: A Case Study</h2>
+
+  <p>To test this idea, I built HiveBrain -- a local knowledge base that runs as an MCP server. The concept is simple: it stores patterns, gotchas, debug solutions, and code snippets that developers discover during their work. AI assistants can search it before attempting a problem and submit new entries after solving one.</p>
+
+  <p>The workflow has three steps. First, when an AI session encounters a non-trivial problem, it searches HiveBrain for existing solutions. If a match exists, the developer gets an instant answer. If not, the AI solves the problem normally. After solving it, the AI submits the solution back to HiveBrain for future sessions.</p>
+
+  <pre>// MCP tool definition for HiveBrain search
+{
+  "name": "hivebrain_search",
+  "description": "Search the knowledge base for patterns, gotchas, and solutions.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Search query -- error messages, concepts, tool names"
+      }
+    },
+    "required": ["query"]
+  }
+}
+
+// MCP tool definition for HiveBrain submit
+{
+  "name": "hivebrain_submit",
+  "description": "Submit a new entry after solving a non-trivial problem.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "title": { "type": "string" },
+      "category": { "enum": ["pattern", "gotcha", "debug", "snippet", "principle"] },
+      "problem": { "type": "string" },
+      "solution": { "type": "string" },
+      "severity": { "enum": ["critical", "major", "moderate", "minor", "tip"] },
+      "tags": { "type": "array", "items": { "type": "string" } },
+      "keywords": { "type": "array", "items": { "type": "string" } }
+    },
+    "required": ["title", "category", "problem", "solution", "severity", "tags", "keywords"]
+  }
+}</pre>
+
+  <h2>Implementation Details</h2>
+
+  <p>HiveBrain runs entirely locally. No cloud dependency, no data leaving the machine. The backend is a lightweight Node.js server with SQLite for storage and full-text search. Entries are categorized by type (pattern, gotcha, debug solution, code snippet, principle) and tagged with relevant technologies.</p>
+
+  <p>The MCP server exposes four tools: <code>hivebrain_search</code> for querying the knowledge base, <code>hivebrain_submit</code> for adding new entries, <code>hivebrain_get</code> for retrieving a full entry by ID, and <code>hivebrain_stats</code> for usage analytics.</p>
+
+  <p>The critical design decision was making the search-work-submit cycle part of the AI's default behavior through system instructions. Without that, the tool exists but never gets used. By embedding the workflow into the AI's operating instructions, every qualifying problem automatically triggers a search, and every novel solution gets submitted. The knowledge base grows organically without any manual effort.</p>
+
+  <p>Search uses a combination of full-text search and keyword matching. I considered adding vector embeddings for semantic search but found that good tagging and keyword extraction gave us 90% of the benefit at a fraction of the complexity. Sometimes the simple solution is the right one.</p>
+
+  <h2>Results</h2>
+
+  <p>After two months of using HiveBrain across my development workflow, the numbers told a clear story:</p>
+
+  <ul>
+    <li><strong>Bug resolution time dropped approximately 40%</strong> for previously-seen problem categories. When the knowledge base had an entry, the fix was nearly instant.</li>
+    <li><strong>Repeated debugging cycles nearly eliminated.</strong> The same ORM edge case that bit three different sessions? Solved once, available forever.</li>
+    <li><strong>Onboarding friction reduced.</strong> New sessions (and hypothetically new team members) inherit the full institutional knowledge from day one.</li>
+    <li><strong>Zero manual documentation effort.</strong> The knowledge base grew as a side effect of normal work, not as a separate task.</li>
+  </ul>
+
+  <p>The most surprising result was qualitative. Knowing that solutions persist changed how I approached problems. I spent more time on root cause analysis because I knew the investment would compound. A thorough debug entry today saves time across every future session that encounters the same issue.</p>
+
+  <h2>What's Next</h2>
+
+  <p>MCP is still early. The ecosystem is growing fast -- servers for databases, APIs, file systems, and specialized tools are appearing weekly. But the real potential is in composability. When every tool speaks the same protocol, you can chain them in ways that weren't possible before.</p>
+
+  <p>Imagine an AI session that searches your team's knowledge base, queries your production logs, checks your CI pipeline status, and cross-references with your project management tool -- all through standardized MCP connections. No custom integrations. No glue code. Just tools that compose naturally because they share a common language.</p>
+
+  <p>For HiveBrain specifically, the roadmap includes team-shared knowledge bases (with conflict resolution for contradictory entries), automatic entry quality scoring, and integration with CI/CD pipelines so that production incidents automatically generate knowledge base entries.</p>
+
+  <div class="blog-divider"></div>
+
+  <h2>The Takeaway</h2>
+
+  <p>MCP is the kind of infrastructure that seems boring until you realize everything is built on top of it. HTTP wasn't exciting. What it enabled -- the entire web -- was. MCP has the same energy. It's not the feature. It's the foundation that makes every future feature possible.</p>
+
+  <p>If you're building AI-powered developer tools, build them as MCP servers. If you're using AI assistants, look for ones that support MCP clients. The protocol is open, the specification is public, and the ecosystem is growing. The era of isolated AI sessions is ending.</p>
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

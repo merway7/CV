@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply Chain AI: Why Most Implementations Fail (And How Ours Didn't) — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="Lessons from deploying AI in a $400M supply chain: why invisible AI beats impressive demos, and how we cut stockouts by 35%.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/supplychain">
+<meta property="og:title" content="Supply Chain AI: Why Most Implementations Fail (And How Ours Didn't)">
+<meta property="og:description" content="Lessons from deploying AI in a $400M supply chain: why invisible AI beats impressive demos, and how we cut stockouts by 35%.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+
+  <div class="blog-meta">
+    <span>Apr 2025</span>
+    <span class="blog-meta-tag">Supply Chain</span>
+    <span class="blog-meta-tag">Enterprise AI</span>
+    <span class="blog-meta-tag">Lessons Learned</span>
+    <span>~7 min read</span>
+  </div>
+
+  <h1>Supply Chain AI: Why Most Implementations Fail (And How Ours Didn't)</h1>
+
+  <p>Here's a statistic that should make every AI consultant uncomfortable: roughly 80% of enterprise AI projects fail to deliver measurable business value. Not "fail to be interesting." Not "fail to impress in demos." Fail to move a KPI that anyone in the C-suite cares about.</p>
+
+  <p>I know this statistic intimately because I almost contributed to it.</p>
+
+  <p>In early 2025, Flair Group was contracted by a $400M+ PPE (Personal Protective Equipment) manufacturer to "add AI to their supply chain." Those were the exact words in the brief. Six words that contain zero actionable information. And yet, that vagueness is exactly how most enterprise AI projects start -- and why most of them fail.</p>
+
+  <h2>The 80% Failure Rate</h2>
+
+  <p>Before I get into our story, it's worth understanding why enterprise AI projects fail so consistently. After seeing dozens of implementations across industries, the failure modes cluster into three categories:</p>
+
+  <p><strong>1. Solution looking for a problem.</strong> A team builds an impressive ML model -- demand forecasting, anomaly detection, predictive maintenance -- and then tries to find a business process to attach it to. The model works in isolation. But nobody changes their workflow to use it. Within six months, it's shelfware.</p>
+
+  <p><strong>2. Data infrastructure wasn't ready.</strong> The AI needs clean, real-time data from 15 different systems. Those systems were built over 20 years by different vendors with different schemas. The first 8 months are spent on data engineering. By the time the AI is functional, the executive sponsor has moved on and the budget is gone.</p>
+
+  <p><strong>3. The humans rejected it.</strong> A supply chain manager with 20 years of experience is told that an algorithm will now make their decisions. They don't trust it. They find workarounds. They feed it bad data to prove it's wrong. The system technically works but is never adopted.</p>
+
+  <p>Our project was heading straight for failure mode #1.</p>
+
+  <h2>Our Initial Mistake</h2>
+
+  <p>When we got the brief, we did what any ambitious AI team would do: we proposed a comprehensive AI-powered supply chain optimization platform. Demand forecasting with transformer models. Automated reorder point calculation. Supplier risk scoring. Real-time anomaly detection on shipment data. A conversational interface for querying supply chain status.</p>
+
+  <p>The proposal was 40 pages. The architecture diagram had 23 components. The timeline was 6 months. The client loved it.</p>
+
+  <p>That should have been our first warning sign.</p>
+
+  <p>Two months in, we had built impressive demos. The demand forecasting model was accurate to within 8% on historical data. The anomaly detection system could identify delayed shipments before the manufacturer's team noticed them. We could ask a chatbot "What's the status of supplier X?" and get a coherent answer.</p>
+
+  <p>None of it was being used. The supply chain team had their spreadsheets, their weekly meetings, their phone calls to suppliers. Our AI platform sat on a separate screen that nobody looked at because looking at it meant changing how they worked.</p>
+
+  <h2>The Pivot</h2>
+
+  <p>The turning point came from a conversation with a warehouse manager named Jean-Marc. I asked him what his biggest daily frustration was. He didn't say "inaccurate demand forecasts" or "suboptimal reorder points." He said:</p>
+
+  <blockquote>"I spend two hours every morning opening six different tabs to figure out if we're going to run out of anything this week."</blockquote>
+
+  <p>That was the moment. Jean-Marc didn't need AI. He needed a dashboard. But he needed a dashboard that was smarter than a spreadsheet -- one that could pull data from six systems, identify the items most likely to cause problems, and surface them before he had to go looking.</p>
+
+  <p>We stopped building "AI" and started building <strong>tools that use AI under the hood</strong>.</p>
+
+  <h2>What We Actually Built</h2>
+
+  <h3>1. The KPI Dashboard</h3>
+
+  <p>A single screen showing the 12 metrics that the supply chain team actually checks every day. Not 50 metrics. Not configurable widgets. Twelve numbers, the same ones they were already tracking in spreadsheets, now updated in real-time and consolidated in one place.</p>
+
+<pre># Dashboard configuration -- deliberately minimal
+DASHBOARD_KPIS = {
+    "inventory": [
+        {"name": "Days of Stock", "source": "erp", "alert_below": 14},
+        {"name": "Stockout Risk (7-day)", "source": "ml_forecast", "alert_above": 0.3},
+        {"name": "Overstock Items", "source": "erp", "alert_above": 50},
+    ],
+    "suppliers": [
+        {"name": "On-Time Delivery Rate", "source": "tms", "alert_below": 0.92},
+        {"name": "Lead Time Trend", "source": "ml_trend", "alert_direction": "increasing"},
+        {"name": "At-Risk Suppliers", "source": "ml_risk_score", "alert_above": 0},
+    ],
+    "demand": [
+        {"name": "Forecast vs Actual (MTD)", "source": "ml_forecast", "alert_deviation": 0.15},
+        {"name": "Trending SKUs", "source": "ml_trend", "alert_count": 10},
+    ]
+}</pre>
+
+  <p>The AI is invisible here. Two of those twelve KPIs come from ML models (stockout risk prediction and supplier risk scoring). The rest are simple database queries. But to the user, they're all just numbers on a screen. Nobody needs to know or care that a gradient-boosted model is generating the stockout risk score.</p>
+
+  <h3>2. Just-In-Time Alerts</h3>
+
+  <p>Instead of asking users to check a dashboard, we pushed the dashboard to them. Alerts via email and SMS when a KPI crosses a threshold. The alert system is straightforward, but the intelligence is in determining <em>what</em> to alert on and <em>when</em>.</p>
+
+<pre># Alert rules with ML-informed thresholds
+class AlertEngine:
+    def evaluate(self, kpi: KPI) -> Alert | None:
+        # Static threshold alerts
+        if kpi.value < kpi.alert_below or kpi.value > kpi.alert_above:
+            return Alert(severity="high", kpi=kpi)
+
+        # ML-predicted threshold crossing
+        forecast = self.forecast_model.predict(kpi, horizon_days=7)
+        if forecast.will_breach_threshold(confidence=0.8):
+            return Alert(
+                severity="medium",
+                kpi=kpi,
+                message=f"Projected to breach threshold in {forecast.days_until_breach} days",
+                suggested_action=self.generate_action(kpi, forecast)
+            )
+
+        return None</pre>
+
+  <p>The key innovation: alerts include a <strong>suggested action</strong>. Not "Stock of Item X is low" but "Stock of Item X projected to run out in 6 days. Supplier Y has 3-day lead time. Recommended: place order for 500 units by Thursday." The supply chain manager still makes the decision, but we did the analysis for them.</p>
+
+  <h3>3. Customer Churn Predictions</h3>
+
+  <p>This one the client didn't ask for, but the data made it obvious. By analyzing order patterns -- frequency, volume, product mix -- we could identify B2B customers whose behavior suggested they were about to reduce orders or switch suppliers. A simple classification model with four features, trained on 3 years of historical data.</p>
+
+  <p>We surfaced it as a weekly email to the sales team: "These 5 accounts show declining engagement. Here's what changed." No AI jargon. No model confidence scores. Just a list of customers to call, with context on what triggered the flag.</p>
+
+  <h2>Why Invisible AI Wins</h2>
+
+  <p>Six months after the pivot, here are the results:</p>
+
+  <ul>
+    <li><strong>Stockouts dropped 35%</strong> -- not because the forecasting model was revolutionary, but because the alerts meant someone actually acted on the predictions before it was too late</li>
+    <li><strong>Morning prep time dropped from 2 hours to 20 minutes</strong> -- Jean-Marc's six-tab ritual was replaced by one dashboard</li>
+    <li><strong>3 at-risk accounts were saved</strong> in the first quarter after the churn alerts went live, representing approximately $2M in annual revenue</li>
+    <li><strong>100% adoption</strong> across the supply chain team -- because we didn't ask them to change how they work, we just made their existing workflow faster</li>
+  </ul>
+
+  <p>The AI is invisible. Nobody on the supply chain team talks about "the AI system." They talk about "the dashboard" and "the alerts." That's not a branding failure. That's the goal.</p>
+
+  <p>When users don't notice the AI, it means the AI is doing its job. It's reducing friction rather than adding a new tool to learn. The best enterprise AI doesn't announce itself. It just makes the existing process work better.</p>
+
+  <h2>Lessons for Enterprise AI</h2>
+
+  <p>If you're building AI for enterprise customers, here are the lessons I wish I'd learned before month two of a failed first attempt:</p>
+
+  <p><strong>1. Start with the spreadsheet.</strong> Find the spreadsheet your users maintain manually. That's your product. Automate it, enrich it with ML, and put it in a real-time interface. Don't build something new -- improve something they already use.</p>
+
+  <p><strong>2. Ship value, not technology.</strong> Your customer doesn't care about transformers, attention mechanisms, or fine-tuning. They care about whether they're going to run out of gloves on Friday. Frame everything in business outcomes, not technical capabilities.</p>
+
+  <p><strong>3. Make AI invisible.</strong> If you have to explain how the AI works for users to adopt it, you've already lost. The AI should feel like a natural extension of their existing tools. A smarter spreadsheet. A more timely alert. A more accurate forecast.</p>
+
+  <p><strong>4. Suggested actions beat predictions.</strong> Telling someone "there's a 73% chance of stockout" creates anxiety without direction. Telling them "order 500 units from Supplier Y by Thursday" creates action. Always pair a prediction with a recommendation.</p>
+
+  <p><strong>5. Adopt their workflow, don't impose yours.</strong> If the team does weekly planning meetings, feed your insights into those meetings. If they communicate via email, send alerts via email. Meet users where they are, not where you think they should be.</p>
+
+  <div class="blog-divider"></div>
+
+  <p>The 80% failure rate in enterprise AI isn't a technology problem. The models work. The infrastructure works. What fails is the interface between the AI system and the humans who are supposed to benefit from it.</p>
+
+  <p>We almost failed the same way. We built impressive technology that nobody used. The fix wasn't a better model or more training data. The fix was listening to Jean-Marc and building the thing he actually needed -- even though it didn't feel like "AI" to us.</p>
+
+  <p>The AI is invisible. Stockouts are down 35%. And Jean-Marc gets his mornings back. That's what success looks like in enterprise AI. Not impressive demos. Moved KPIs.</p>
+
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>

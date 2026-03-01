@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Running LLMs Locally Changed My Entire Approach to AI Products — Merwan T Djerbi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='16' y='22' font-family='sans-serif' font-weight='700' font-size='14' fill='%2300b8ff' text-anchor='middle'>MD</text></svg>">
+<meta name="description" content="How switching from cloud APIs to local LLMs with Ollama slashed costs and improved output quality for constrained AI tasks.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://merwandjerbi.com/blog/localllms">
+<meta property="og:title" content="Running LLMs Locally Changed My Entire Approach to AI Products">
+<meta property="og:description" content="How switching from cloud APIs to local LLMs with Ollama slashed costs and improved output quality for constrained AI tasks.">
+<meta property="og:image" content="https://merwandjerbi.com/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="view-switcher.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111119;
+  --bg3:#1a1a25;
+  --surface:#16161f;
+  --border:#2a2a3a;
+  --text:#e0e0ec;
+  --text2:#9898b2;
+  --accent:#B07FE0;
+  --accent2:#00b8ff;
+  --accent3:#7b61ff;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sora',sans-serif;
+}
+:focus-visible{outline:2px solid var(--accent2,#00b8ff);outline-offset:3px;border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.8}
+.blog-container{max-width:740px;margin:0 auto;padding:60px 24px 120px}
+.blog-back{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);text-decoration:none;font-size:13px;font-family:var(--mono);margin-bottom:40px;transition:opacity .2s}
+.blog-back:hover{opacity:.7}
+.blog-meta{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:12px;flex-wrap:wrap}
+.blog-meta-tag{background:var(--bg3);padding:3px 10px;border-radius:20px;font-size:11px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:22px;font-weight:600;margin:48px 0 16px;color:var(--text)}
+h3{font-size:17px;font-weight:600;margin:32px 0 12px;color:var(--text)}
+p{font-size:15px;color:var(--text2);margin-bottom:20px}
+a{color:var(--accent2)}
+code{font-family:var(--mono);background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:13px}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:24px 0;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text)}
+blockquote{border-left:3px solid var(--accent);padding-left:20px;margin:24px 0;color:var(--text2);font-style:italic}
+ul,ol{margin:16px 0;padding-left:24px;color:var(--text2);font-size:15px}
+li{margin-bottom:8px}
+strong{color:var(--text);font-weight:600}
+.blog-divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:48px 0}
+</style>
+</head>
+<body>
+<div class="blog-container">
+  <a href="index.html#insights" class="blog-back">&larr; Back to Insights</a>
+
+  <div class="blog-meta">
+    <span>Mar 2025</span>
+    <span class="blog-meta-tag">Local LLMs</span>
+    <span class="blog-meta-tag">Ollama</span>
+    <span class="blog-meta-tag">Cost Optimization</span>
+    <span>~6 min read</span>
+  </div>
+
+  <h1>Running LLMs Locally Changed My Entire Approach to AI Products</h1>
+
+  <p>When I started building an AI-powered Social Media Manager, I did what every developer does in 2025: I wired up the OpenAI API, wrote some prompts, and watched the magic happen. The product generated social media posts, scheduled them, adapted tone to each platform. It was genuinely useful.</p>
+
+  <p>Then I looked at the bill.</p>
+
+  <p>For a bootstrapped product targeting small businesses and solopreneurs, spending $0.03-0.06 per generation on GPT-4 class models adds up fast. A single user generating 20 posts a day across platforms would cost me $1.20/day in API calls alone. Multiply that by even a modest user base and the unit economics collapse before you ever reach profitability.</p>
+
+  <p>That realization sent me down a path I didn't expect. I started running LLMs locally. And it didn't just save money -- it fundamentally changed how I think about building AI products.</p>
+
+  <h2>The Cost Reality</h2>
+
+  <p>Let me be specific about the numbers. For the Social Media Manager, each post generation involved:</p>
+
+  <ul>
+    <li>A system prompt (~500 tokens) defining tone, platform rules, and brand voice</li>
+    <li>User context (~200 tokens) with the topic, key points, and constraints</li>
+    <li>Output (~300 tokens) for the generated post</li>
+  </ul>
+
+  <p>At GPT-4 Turbo pricing, that's roughly $0.03 per generation. Sounds cheap until you realize the product's value proposition is <strong>volume</strong>. Users want 5-10 variants per platform, across 3-4 platforms, multiple times per week. A single active user could easily trigger 200+ generations per month.</p>
+
+  <p>For a product priced at $29/month, API costs alone could eat 20-40% of revenue. That's before hosting, storage, and everything else.</p>
+
+  <h2>Going Local with Ollama</h2>
+
+  <p>Ollama made the transition surprisingly painless. If you haven't used it, the setup is almost offensively simple:</p>
+
+<pre># Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull a model
+ollama pull mistral:7b
+
+# Run it
+ollama run mistral:7b
+
+# Or use the API (drop-in replacement for OpenAI format)
+curl http://localhost:11434/api/generate -d '{
+  "model": "mistral:7b",
+  "prompt": "Write a LinkedIn post about remote work trends",
+  "stream": false
+}'</pre>
+
+  <p>On my M2 MacBook Pro with 16GB RAM, Mistral 7B runs at roughly 30 tokens/second. Not blazing, but absolutely fast enough for generating social media posts. The first token appears in under a second. For a product where users queue up batch generations, latency is a non-issue.</p>
+
+  <p>The API is compatible with OpenAI's format, which meant swapping out the backend was a one-line configuration change in my abstraction layer:</p>
+
+<pre># Before
+client = OpenAI(api_key=os.environ["OPENAI_KEY"])
+
+# After
+client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="ollama"  # required but unused
+)</pre>
+
+  <h2>When Small Beats Big</h2>
+
+  <p>Here's the counterintuitive discovery that changed my thinking: <strong>for constrained, well-defined tasks, a 7B parameter model with a carefully engineered system prompt consistently outperforms a frontier model with a generic prompt.</strong></p>
+
+  <p>This sounds wrong. How can a model with 50x fewer parameters produce better output? The answer is scope. When you're asking GPT-4 to "write a LinkedIn post," it draws on its vast knowledge to produce something generically good. When you give Mistral 7B a hyper-specific system prompt that defines exactly what a good LinkedIn post looks like for this brand, with explicit rules about length, hashtag usage, hook patterns, and CTA placement, the smaller model's output is more consistent and more on-brand.</p>
+
+  <p>The frontier model is smarter. But smartness isn't what you need for repetitive, well-scoped content generation. You need consistency and adherence to constraints. Smaller models, paradoxically, are better at following rigid instructions because they have less "creativity" to fight against.</p>
+
+  <h2>System Prompt Engineering for Local Models</h2>
+
+  <p>The key to making local models work is investing heavily in system prompt engineering. Here's a simplified version of what I use for LinkedIn post generation:</p>
+
+<pre>SYSTEM_PROMPT = """You are a LinkedIn content writer for {brand_name}.
+
+VOICE: Professional but approachable. No corporate jargon.
+NEVER use: "excited to announce", "thrilled", "game-changer", "leverage"
+
+STRUCTURE (follow exactly):
+1. Hook: 1 sentence, pattern-interrupt or contrarian take
+2. Problem: 2-3 sentences establishing the pain point
+3. Insight: 3-4 sentences with your unique perspective
+4. Proof: 1 concrete example, number, or result
+5. CTA: 1 question to drive comments
+
+RULES:
+- Total length: 150-200 words
+- Max 2 hashtags, placed at the end
+- No emojis in the first line
+- Line breaks between each section
+- First person only
+
+OUTPUT: Return ONLY the post text. No explanations."""</pre>
+
+  <p>This level of specificity is what makes a 7B model competitive. You're not asking it to be creative. You're asking it to fill in a template with intelligent variation. That's a fundamentally different task, and it's one that smaller models handle well.</p>
+
+  <h2>The Approval Workflow</h2>
+
+  <p>Running locally doesn't mean running unsupervised. The product uses a three-stage workflow:</p>
+
+  <ol>
+    <li><strong>Generation</strong> -- The local model produces 5 variants per request</li>
+    <li><strong>Ranking</strong> -- A lightweight scoring function evaluates each variant against the system prompt rules (length, structure, forbidden words)</li>
+    <li><strong>Human Review</strong> -- The top 3 variants are presented to the user for selection or editing</li>
+  </ol>
+
+  <p>The ranking step is crucial. It catches the 10-15% of generations where the model drifts from the constraints. Rather than paying for a smarter model that drifts less often, I generate more variants cheaply and filter programmatically. When each generation costs effectively zero (just electricity), generating 5x and filtering is a better strategy than paying 50x per token for marginally better first-shot accuracy.</p>
+
+  <h2>When to Use Cloud vs. Local</h2>
+
+  <p>I'm not a local-LLM maximalist. After months of running this hybrid setup, here's my decision framework:</p>
+
+  <p><strong>Use local models when:</strong></p>
+  <ul>
+    <li>The task is well-defined and repeatable (content generation, data extraction, classification)</li>
+    <li>You can write a detailed system prompt that covers 90%+ of cases</li>
+    <li>Volume is high and cost sensitivity matters</li>
+    <li>Latency requirements are relaxed (batch processing, queued jobs)</li>
+    <li>Data privacy is a concern (everything stays on-device)</li>
+  </ul>
+
+  <p><strong>Use cloud/frontier models when:</strong></p>
+  <ul>
+    <li>The task requires broad reasoning or multi-step logic</li>
+    <li>You need the model to handle unexpected edge cases gracefully</li>
+    <li>Output quality on first attempt is critical (customer-facing, real-time)</li>
+    <li>The task changes frequently and you can't maintain specialized prompts</li>
+  </ul>
+
+  <p>For the Social Media Manager, roughly 85% of generations run locally. The remaining 15% -- complex content strategies, multi-platform campaign planning, tone analysis -- go to Claude via API. The blended cost per generation dropped from $0.04 to under $0.005.</p>
+
+  <div class="blog-divider"></div>
+
+  <h2>The Bigger Lesson</h2>
+
+  <p>The real takeaway isn't about Ollama or Mistral. It's about matching the tool to the task. The AI industry has a bias toward bigger, smarter, more expensive models. But most production AI workloads are not open-ended reasoning problems. They're constrained generation tasks where consistency matters more than creativity.</p>
+
+  <p>Running models locally forced me to think harder about what I actually needed from the AI. That constraint made the product better. The system prompts are more precise. The output is more consistent. The costs are sustainable. And the entire inference pipeline runs on a laptop, which means I can develop, test, and iterate without an internet connection or a growing API bill.</p>
+
+  <p>If you're building an AI product and the API costs make you nervous, don't reach for a cheaper model tier. Reach for a local one. You might be surprised at what a 7B model can do when you tell it exactly what you want.</p>
+
+</div>
+<script src="view-switcher.js"></script>
+</body>
+</html>
