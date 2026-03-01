@@ -1114,7 +1114,7 @@ footer a{color:var(--accent);text-decoration:none}
     </div>
     <div class="blog-grid">
 
-      <a class="blog-card reveal" href="/blog/alfred">
+      <a class="blog-card reveal" href="blog-alfred.html">
         <div class="blog-date">Feb 2026</div>
         <div class="blog-title">I Built Alfred: A Fully Autonomous AI Agent That Runs My Life</div>
         <div class="blog-excerpt">After months of building agentic systems for enterprises, I turned the lens inward. Alfred is my personal AI agent &mdash; it reads my emails, drafts responses, manages my calendar, and executes multi-step workflows through voice and chat. The key insight was treating personal automation like an enterprise problem: a persistent agent with memory, tool access, and a feedback loop. Alfred doesn't just respond to commands &mdash; it anticipates. It notices I book flights every third Thursday and pre-researches options. It sees a Slack message about a deadline and blocks focus time on my calendar. We're past the "AI assistant" era. This is the "AI colleague" era.</div>
@@ -1125,7 +1125,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/openclaw">
+      <a class="blog-card reveal" href="blog-openclaw.html">
         <div class="blog-date">Jan 2026</div>
         <div class="blog-title">OpenClaw, Claude Code, and the Future of AI Agents as Interfaces</div>
         <div class="blog-excerpt">OpenClaw going viral in January was the tipping point I'd been waiting for. An open-source agent that lives in your messaging apps, connects to any LLM, and has a community registry of 5,000+ skills? That's not a chatbot &mdash; that's a new computing paradigm. I've been running my own Clawdbot instance since Steinberger's original release in November, and it fundamentally changed how I think about AI interfaces. The terminal (Claude Code) is for builders. The chat app (OpenClaw) is for everyone else. The real question isn't "which agent is best" &mdash; it's "how many agents do you need, and where should they live?" My answer: everywhere. An agent in your IDE, one in your WhatsApp, one managing your supply chain. The OS of the future is a swarm.</div>
@@ -1136,7 +1136,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/clawdbot">
+      <a class="blog-card reveal" href="blog-clawdbot.html">
         <div class="blog-date">Nov 2025</div>
         <div class="blog-title">Clawdbot: My First Experiment With Messaging-First AI Agents</div>
         <div class="blog-excerpt">When Peter Steinberger dropped Clawdbot as open source, I spun up an instance within hours. A Docker container, a Claude API key, and suddenly I had a fully autonomous agent living in my Signal chats. The architecture is elegant &mdash; the messaging app becomes the universal interface, and the agent handles everything from running shell commands to managing integrations. I immediately started extending it: connecting it to my Flair analytics pipeline so I could query supply chain KPIs from my phone. "What's the stockout rate for Q4?" &mdash; answered in 3 seconds via text message. This is what enterprise AI should feel like.</div>
@@ -1147,7 +1147,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/rag">
+      <a class="blog-card reveal" href="blog-rag.html">
         <div class="blog-date">Oct 2025</div>
         <div class="blog-title">Why I Stopped Using RAG and Started Building Agents</div>
         <div class="blog-excerpt">RAG was a revelation in 2023. Stuff your context window with retrieved documents, and the LLM magically knows your data. But after deploying RAG pipelines in production for a $400M+ enterprise, I realized we were solving the wrong problem. The bottleneck was never "the model doesn't know enough" &mdash; it was "the model can't act on what it knows." That's when I switched to agentic architectures. An agent with a Planner, Workers, and a Judge doesn't just retrieve &mdash; it reasons, executes, and self-corrects. My stockout predictions improved 35% not because the model got smarter, but because it could now run the full analysis loop autonomously.</div>
@@ -1158,7 +1158,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/mcp">
+      <a class="blog-card reveal" href="blog-mcp.html">
         <div class="blog-date">Dec 2024</div>
         <div class="blog-title">The MCP Protocol Will Change How We Build AI Tools</div>
         <div class="blog-excerpt">I've been building developer tools for two years now. The biggest pain point? Every AI assistant is an island. Your Claude Code session discovers a critical debugging pattern at 2am, and by morning it's gone forever. That's why I built HiveBrain &mdash; a local knowledge base with an MCP server that lets any AI coding agent search and contribute to a persistent knowledge graph. MCP (Model Context Protocol) is the missing layer between LLMs and the tools they need. It's what HTTP was for the web: a universal interface that lets any model talk to any tool. When I plugged HiveBrain into my daily workflow via MCP, my bug resolution time dropped by roughly 40%. The pattern is clear: the next wave of AI isn't better models &mdash; it's better infrastructure.</div>
@@ -1169,7 +1169,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/multiagent">
+      <a class="blog-card reveal" href="blog-multiagent.html">
         <div class="blog-date">Aug 2025</div>
         <div class="blog-title">Multi-Agent Systems Are the New Microservices</div>
         <div class="blog-excerpt">In 2015, the industry went from monoliths to microservices. In 2025, we're going from monolithic prompts to multi-agent systems. The parallel is striking: single-agent architectures hit the same walls monoliths did &mdash; they become unwieldy, hard to debug, and impossible to scale. My Organized Agents framework uses a Planner-Worker-Judge pattern inspired by how real engineering teams work. The Planner breaks down tasks. Workers execute in parallel. The Judge evaluates quality. Just like you wouldn't have one developer do everything, you shouldn't have one agent do everything. The results speak for themselves: complex supply chain analyses that took hours of manual work now run autonomously in minutes, with built-in quality gates.</div>
@@ -1180,7 +1180,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/localllms">
+      <a class="blog-card reveal" href="blog-localllms.html">
         <div class="blog-date">Mar 2025</div>
         <div class="blog-title">Running LLMs Locally Changed My Entire Approach to AI Products</div>
         <div class="blog-excerpt">When I built my AI Social Media Manager, the initial plan was to use Claude or GPT-4 for content generation. Then I did the math: 4 posts per day, 365 days, multiple platforms &mdash; the API costs were a non-starter for a bootstrapped product. So I went local. Ollama + Mistral on my MacBook. Zero API cost. Full privacy. And here's the thing nobody talks about: for constrained, well-defined tasks like generating LinkedIn posts in a specific voice, a 7B parameter model running locally outperforms a frontier model with a generic prompt. The secret is in the system prompt engineering and the approval workflow, not the model size. I now default to local-first for any task that's repetitive and well-scoped. Cloud APIs are for the complex stuff.</div>
@@ -1191,7 +1191,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/llmcouncil">
+      <a class="blog-card reveal" href="blog-llmcouncil.html">
         <div class="blog-date">Jun 2025</div>
         <div class="blog-title">What Happens When You Let Multiple LLMs Argue With Each Other</div>
         <div class="blog-excerpt">I built something weird over a weekend: an LLM Council. You send a query, it fans out to 5+ models simultaneously via OpenRouter, then each model reviews and ranks the others' answers anonymously. A "Chairman" LLM synthesizes the final response. The results were fascinating. Individual models have predictable blind spots. Claude is cautious about edge cases. GPT-4 is confident but sometimes wrong. Gemini is creative but verbose. But when they review each other? The council catches errors that no single model would. It's ensemble learning applied to reasoning. The anonymous review is key &mdash; without it, models defer to "consensus" instead of genuine critique. I'm now exploring using this pattern for automated code review where stakes are high.</div>
@@ -1202,7 +1202,7 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </a>
 
-      <a class="blog-card reveal" href="/blog/supplychain">
+      <a class="blog-card reveal" href="blog-supplychain.html">
         <div class="blog-date">Apr 2025</div>
         <div class="blog-title">Supply Chain AI: Why Most Implementations Fail (And How Ours Didn't)</div>
         <div class="blog-excerpt">80% of enterprise AI projects fail. I know because I almost joined that statistic. When Flair Group was contracted by a $400M+ PPE manufacturer, the initial ask was "add AI to our supply chain." That's not a spec &mdash; that's a wish. The turnaround came when we stopped trying to build "AI" and started building dashboards that happened to use AI under the hood. Nobody cares about your multi-agent framework. They care that stockouts dropped 35%. The KPI dashboard we built doesn't say "powered by AI" anywhere. It just works: real-time visibility, JIT reorder alerts, churn predictions. The AI is invisible, and that's exactly the point. The lesson: ship value, not technology. Let the results do the talking.</div>
